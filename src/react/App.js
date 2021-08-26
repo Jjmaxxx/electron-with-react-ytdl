@@ -10,14 +10,14 @@ class App extends React.Component{
   linkSubmit = (event) => {
     event.preventDefault();
     console.log(event.target[0].value);
-    
+    ipcRenderer.send('sent-link', event.target[0].value);
+    ipcRenderer.on('vid-info', (event, arg) => {
+      console.log(arg);
+    })
   }
   render(){
-    console.log(ipcRenderer.sendSync('synchronous-message', 'ping')) // prints "pong"
-    ipcRenderer.on('asynchronous-reply', (event, arg) => {
-      console.log(arg) // prints "pong"
-    })
-    ipcRenderer.send('asynchronous-message', 'ping');
+    //console.log(ipcRenderer.sendSync('synchronous-message', 'ping')) // prints "pong"
+    // ipcRenderer.send('asynchronous-message', 'ping');
     return (
       <div className="App">
        <form id="youtubeForm" onSubmit={this.linkSubmit}>

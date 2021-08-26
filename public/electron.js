@@ -1,6 +1,7 @@
 const path = require('path');
 const {ipcRenderer, ipcMain, app, BrowserWindow} = require('electron');
 const isDev = require('electron-is-dev');
+const ytdl = require("./ytdl.js");
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
@@ -27,15 +28,16 @@ app.whenReady().then(()=>{
       }
   })
 })
-ipcMain.on('asynchronous-message', (event, arg) => {
-  console.log(arg) // prints "ping"
-  event.reply('asynchronous-reply', 'pong')
+ipcMain.on('sent-link', async(event, arg)=>{
+  console.log(arg)
+  let videoData = await ytdl.createReadableStream(arg);
+  event.reply('vid-info', videoData);
 })
 
-ipcMain.on('synchronous-message', (event, arg) => {
-  console.log(arg) // prints "ping"
-  event.returnValue = 'pong'
-})
+// ipcMain.on('synchronous-message', (event, arg) => {
+//   console.log(arg) // prints "ping"
+//   event.returnValue = 'pong'
+// })
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
