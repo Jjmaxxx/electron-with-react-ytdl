@@ -15,17 +15,6 @@ module.exports = {
         //console.log(info);
         let defaultName = info.videoDetails.title;
         console.log(defaultName);
-        // let quality = document.getElementById("quality");
-        // quality.innerHTML = "";
-        // let mp4ormp3 = document.getElementById("mp4ormp3");
-        // mp4ormp3.style.display = "block";
-        // mp4ormp3.addEventListener('change', ()=>{
-        //   if(mp4ormp3.options[mp4ormp3.selectedIndex].value == "mp3"){
-        //     quality.style.display = "none";
-        //   }else{
-        //     quality.style.display = "block";
-        //   }
-        // })
         let uniqueQuality = new Map();
         let qualities = [];
         info.formats.forEach((element)=>{
@@ -37,18 +26,6 @@ module.exports = {
         });
         console.log(qualities);
         resolve({name:defaultName, qualityList:qualities});
-        // let name = document.getElementById("name");
-        // name.value = defaultName;
-        // let doneButton = document.getElementById("doneButton");
-        // doneButton.onclick = ()=>{
-        //     if(mp4ormp3.options[mp4ormp3.selectedIndex].value == "mp3"){
-        //       audioOnly(url,name.value)
-        //     }else{
-        //       mergeVideoAudio(url,name.value,quality.options[quality.selectedIndex].value);
-        //     }
-        //     youtubeForm.reset()
-        //   };
-        // })
     });
     })
       
@@ -56,12 +33,12 @@ module.exports = {
   audioOnly: (url, name)=>{
     let path = "./videos/"+name +".mp3";
     ytdl(url,{filter:"audioonly"}).pipe(fs.createWriteStream(path)).on('finish',()=>{
-      source.setAttribute('src', path);
-      audio.setAttribute('src', source.src);
-      audioContainer.style.display = "block";
-      audioContainer.load();
-      afterGetInfo.style.display = "none";
-      songPlaying.innerHTML = "Now Playing: " + name;
+      // source.setAttribute('src', path);
+      // audio.setAttribute('src', source.src);
+      // audioContainer.style.display = "block";
+      // audioContainer.load();
+      // afterGetInfo.style.display = "none";
+      // songPlaying.innerHTML = "Now Playing: " + name;
     });
   },
   mergeVideoAudio: (url, name, vidQuality)=>{

@@ -1,4 +1,4 @@
-
+const { ipcRenderer } = require('electron');
 ipcRenderer.on("asynchronous-message",(event,message)=>{
     
     console.log('aaa');

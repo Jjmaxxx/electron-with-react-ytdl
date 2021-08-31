@@ -33,7 +33,12 @@ ipcMain.on('sent-link', async(event, arg)=>{
   let videoData = await ytdl.createReadableStream(arg);
   event.reply('vid-info', videoData);
 })
-
+ipcMain.on('download', async(event,args)=>{
+  console.log(args);
+  // if(args.fileType === "mp3"){
+  //   ytdl.createReadableStream()
+  // }
+})
 // ipcMain.on('synchronous-message', (event, arg) => {
 //   console.log(arg) // prints "ping"
 //   event.returnValue = 'pong'
