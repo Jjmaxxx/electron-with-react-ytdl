@@ -73,8 +73,8 @@ module.exports = {
       
       //done downloading this runs
       ffmpegProcess.on('close', () => {
-          resolve(path);
-        })
+        resolve(path);
+      })
       audio.pipe(ffmpegProcess.stdio[4]);
       video.pipe(ffmpegProcess.stdio[5]);
     })
