@@ -23,6 +23,9 @@ const styles = {
       overflow: 'auto',
     },
     content: {
+      marginLeft:"180px", 
+    },
+    contentContainer: {
       flexGrow: 1,
       height:"100%",
       display: 'flex',
@@ -30,6 +33,15 @@ const styles = {
       justifyContent: 'center',
       flexDirection:"column",
       //padding: theme.spacing(3),
+    },
+    contentInputCenter:{
+      display: 'flex',
+      alignItems: 'center',
+      flexDirection:"column",
+    },
+    contentCenter:{
+      display:"flex",
+      alignItems:'center',
     },
     break: {
       flexBasis:"100%",
