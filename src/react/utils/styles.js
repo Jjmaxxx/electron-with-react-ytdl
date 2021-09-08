@@ -11,11 +11,9 @@ const styles = {
       width: "300px",
       height:"100%",
       flexShrink: 0,
-      backgroundColor:'black'
     },
     drawerPaper:{
       width: "300px",
-      backgroundColor:'black'
     },
     drawerTabs: {
       width: "100%",
@@ -30,7 +28,6 @@ const styles = {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor:"black",
       flexDirection:"column",
       //padding: theme.spacing(3),
     },

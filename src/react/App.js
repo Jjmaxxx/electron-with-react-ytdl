@@ -3,7 +3,7 @@ import React from "react";
 // import VideoText from './videoText.js';
 import helperFunctions from './utils/helperFunctions.js';
 import styles from './utils/styles.js';
-import { Button, Drawer } from "@material-ui/core";
+import { Button, Drawer, TextField } from "@material-ui/core";
 //import ResizeableInput from './ResizeableInput.js';
 //import { NativeSelect, MenuList, MenuItem } from '@material-ui/core';
 const { ipcRenderer } = window.require("electron");
@@ -82,28 +82,61 @@ class App extends React.Component{
       <div style={classes.content}>
         <div style={{marginLeft:"180px"}}>
         <form onSubmit={this.linkSubmit}>
-          <label htmlFor="youtubeForm">Insert youtube url:</label>
-          <input type="text"/>
-          <button type="submit">Submit</button>
+          {/* <label htmlFor="youtubeForm">Insert youtube url:</label> */}
+          <TextField id="standard-basic" label="Insert Youtube Url" />
+          <Button style={{top:"12px",left:"5px"}}variant="contained" color="primary" type="submit">Submit</Button>
         </form>
           {(()=>{
             if(this.state.linkSubmitted === true ){
               return(
                 <div>
-                  <input type= "text" value={this.state.fileName} onChange = {this.getName}/>
+                  <TextField
+                    label="Title"
+                    id="outlined-size-small"
+                    defaultValue="Small"
+                    variant="outlined"
+                    size="small"
+                    value={this.state.fileName} 
+                    style={{top:"10px", width: `${(8*this.state.fileName.length)+20}px`}}
+                    onChange = {this.getName}
+                  />
                   <br/>
-                  <select onChange= {(e)=>{this.changeOption(e,"mp3ormp4")}}>
+                  <TextField
+                    label="FileType"
+                    //style={{width: `${(8*this.state.fileType.length) + 100}px`, top:"20px"}}
+                    style={{minWidth:10, top:"20px"}}
+                    id="outlined-select-currency-native"
+                    select
+                    onChange= {(e)=>{this.changeOption(e,"mp3ormp4")}}
+                    SelectProps={{
+                      native: true,
+                    }}
+                    size="small"
+                    // helperText="Select Type"
+                    variant="outlined"
+                  >
                     {helperFunctions.setOptions([{name:"mp3",value:"mp3"},{name:"mp4",value:"mp4"}])}
-                  </select>  
+                  </TextField>
                   {this.state.fileType==="mp4" &&
-                    <select onChange= {(e)=>{this.changeOption(e,"quality")}}>
+                    <TextField
+                      label="Quality"
+                      style={{minWidth:10, top:"20px"}}
+                      id="outlined-select-currency-native"
+                      select
+                      onChange= {(e)=>{this.changeOption(e,"quality")}}
+                      SelectProps={{
+                        native: true,
+                      }}
+                      size="small"
+                      // helperText="Select Type"
+                      variant="outlined"
+                    >
                       {helperFunctions.setOptions(qualities)}
-                    </select>  
+                    </TextField> 
                   }
                   {/* <Dropdown options={[]}/>
                   <Dropdown options={qualities}/> */}
-                  <br/>
-                  <button onClick={this.download}>Done</button>
+                  <Button style={{top:"22px",left:"4px"}}onClick={this.download} variant="contained" color="primary">Done</Button>
                 </div>
               )
             }
