@@ -11,6 +11,8 @@ const styles = {
       width: "300px",
       height:"100%",
       flexShrink: 0,
+      backgroundColor:"#12171d"
+
     },
     drawerPaper:{
       width: "300px",
@@ -46,6 +48,9 @@ const styles = {
     break: {
       flexBasis:"100%",
       width:0
+    },
+    paper:{
+      backgroundColor:"#12171d"
     }
 };
 export default styles;

@@ -4,7 +4,8 @@ import React from "react";
 import helperFunctions from './utils/helperFunctions.js';
 import styles from './utils/styles.js';
 import theme from './utils/theme.js';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import CssBaseline from "@material-ui/core/CssBaseline";
+import { MuiThemeProvider } from "@material-ui/core/styles";
 import { Button, Drawer, TextField } from "@material-ui/core";
 //import ResizeableInput from './ResizeableInput.js';
 //import { NativeSelect, MenuList, MenuItem } from '@material-ui/core';
@@ -64,73 +65,67 @@ class App extends React.Component{
     const classes = styles;
     return (
       //App
-      <div className="App" theme ={theme} style={{height:"90vh"}}>
+      //, backgroundColor:"#222831"}
+      <div className="App" style={{height:"90vh"}}>
         <MuiThemeProvider theme={theme}>
-        <div style= {classes.root} >
-          <Drawer 
-            style = {classes.drawer}
-            variant = "permanent" anchor="left"
-          >
-            <div style={{width:"180px"}}>
-              <p style = {classes.drawerTabs}>youtube download</p>
-              <p style = {classes.drawerTabs}>downloads</p>
-            </div>
-          </Drawer>
-          <Drawer variant = "permanent" anchor="bottom">
-            <div style={{height:"100px"}}>
-              <p>filler text</p>
-            </div>
-          </Drawer>
-        </div>
-      <div style={classes.contentContainer}>
-        <div style={classes.content}>
-          <div style={classes.contentInputCenter}>
-            <form onSubmit={this.linkSubmit}>
-              {/* <label htmlFor="youtubeForm">Insert youtube url:</label> */}
-              <TextField id="standard-basic" label="Insert Youtube Url" />
-              <Button style={{top:"12px",left:"5px"}}variant="contained" color="primary" type="submit">Submit</Button>
-            </form>
+          <CssBaseline/>
+          <div color="primary" style= {classes.root} >
+            <Drawer 
+              style = {classes.drawer}
+              variant = "permanent" 
+              anchor="left"
+              classes={{ paper: classes.paper }}
+            >
+              <div style={{width:"180px"}}>
+                <p style = {classes.drawerTabs}>youtube download</p>
+                <p style = {classes.drawerTabs}>downloads</p>
+              </div>
+            </Drawer>
+            <Drawer 
+            variant = "permanent" 
+            anchor="bottom"
+            style={{ paper: classes.paper }}
+            >
+              <div style={{height:"100px"}}>
+                <p>filler text</p>
+              </div>
+            </Drawer>
           </div>
-            {(()=>{
-              if(this.state.linkSubmitted === true ){
-                return(
-                  <div>
-                    <div style={classes.contentInputCenter}>
-                      <TextField
-                        label="Title"
-                        id="outlined-size-small"
-                        defaultValue="Small"
-                        variant="outlined"
-                        size="small"
-                        value={this.state.fileName} 
-                        style={{top:"10px", width: `${(9*this.state.fileName.length)+20}px`}}
-                        onChange = {this.getName}
-                      />
-                      <div/>
-                      <div style={classes.contentCenter}>
+        <div style={classes.contentContainer}>
+          <div style={classes.content}>
+            <div style={classes.contentInputCenter}>
+              <form onSubmit={this.linkSubmit}>
+                {/* <label htmlFor="youtubeForm">Insert youtube url:</label> */}
+                <TextField id="standard-basic" color ="secondary" label="Insert Youtube Url" />
+                <Button style={{top:"12px",left:"5px"}}variant="contained" color="secondary" type="submit">Submit</Button>
+              </form>
+            </div>
+              {(()=>{
+                if(this.state.linkSubmitted === true ){
+                  return(
+                    <div>
+                      <div style={classes.contentInputCenter}>
                         <TextField
-                          label="FileType"
-                          //style={{width: `${(8*this.state.fileType.length) + 100}px`, top:"20px"}}
-                          style={{minWidth:10, top:"20px"}}
-                          id="outlined-select-currency-native"
-                          select
-                          onChange= {(e)=>{this.changeOption(e,"mp3ormp4")}}
-                          SelectProps={{
-                            native: true,
-                          }}
-                          size="small"
-                          // helperText="Select Type"
+                          label="Title"
+                          id="outlined-size-small"
+                          defaultValue="Small"
                           variant="outlined"
-                        >
-                          {helperFunctions.setOptions([{name:"mp3",value:"mp3"},{name:"mp4",value:"mp4"}])}
-                        </TextField>
-                        {this.state.fileType==="mp4" &&
+                          size="small"
+                          color="secondary"
+                          value={this.state.fileName} 
+                          style={{top:"10px", width: `${(8*this.state.fileName.length)+20}px`}}
+                          onChange = {this.getName}
+                        />
+                        <div/>
+                        <div style={classes.contentCenter}>
                           <TextField
-                            label="Quality"
+                            label="FileType"
+                            //style={{width: `${(8*this.state.fileType.length) + 100}px`, top:"20px"}}
                             style={{minWidth:10, top:"20px"}}
                             id="outlined-select-currency-native"
                             select
-                            onChange= {(e)=>{this.changeOption(e,"quality")}}
+                            color="secondary"
+                            onChange= {(e)=>{this.changeOption(e,"mp3ormp4")}}
                             SelectProps={{
                               native: true,
                             }}
@@ -138,20 +133,37 @@ class App extends React.Component{
                             // helperText="Select Type"
                             variant="outlined"
                           >
-                            {helperFunctions.setOptions(qualities)}
-                          </TextField> 
-                        }
-                        {/* <Dropdown options={[]}/>
-                        <Dropdown options={qualities}/> */}
-                        <Button style={{top:"22px",left:"4px"}}onClick={this.download} variant="contained" color="primary">Done</Button>
+                            {helperFunctions.setOptions([{name:"mp3",value:"mp3"},{name:"mp4",value:"mp4"}])}
+                          </TextField>
+                          {this.state.fileType==="mp4" &&
+                            <TextField
+                              label="Quality"
+                              style={{minWidth:10, top:"20px"}}
+                              id="outlined-select-currency-native"
+                              select
+                              color="secondary"
+                              onChange= {(e)=>{this.changeOption(e,"quality")}}
+                              SelectProps={{
+                                native: true,
+                              }}
+                              size="small"
+                              // helperText="Select Type"
+                              variant="outlined"
+                            >
+                              {helperFunctions.setOptions(qualities)}
+                            </TextField> 
+                          }
+                          {/* <Dropdown options={[]}/>
+                          <Dropdown options={qualities}/> */}
+                          <Button style={{top:"18px",left:"4px"}}onClick={this.download} variant="contained" color="secondary">Done</Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
-              }
-            })()}      
-          </div> 
-        </div>
+                  )
+                }
+              })()}      
+            </div> 
+          </div>
         </MuiThemeProvider>
       </div>
     );
