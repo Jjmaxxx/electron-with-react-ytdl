@@ -74,7 +74,6 @@ class App extends React.Component{
               style = {classes.drawer}
               variant = "permanent" 
               anchor="left"
-              classes={{ paper: classes.paper }}
             >
               <div style={{width:"180px"}}>
                 <p style = {classes.drawerTabs}>youtube download</p>
@@ -84,7 +83,6 @@ class App extends React.Component{
             <Drawer 
             variant = "permanent" 
             anchor="bottom"
-            style={{ paper: classes.paper }}
             >
               <div style={{height:"100px"}}>
                 <p>filler text</p>
@@ -96,8 +94,8 @@ class App extends React.Component{
             <div style={classes.contentInputCenter}>
               <form onSubmit={this.linkSubmit}>
                 {/* <label htmlFor="youtubeForm">Insert youtube url:</label> */}
-                <TextField id="standard-basic" color ="secondary" label="Insert Youtube Url" />
-                <Button style={{top:"12px",left:"5px"}}variant="contained" color="secondary" type="submit">Submit</Button>
+                <TextField id="standard-basic" color ="secondary" label="Insert Youtube URL" />
+                <Button style={{top:"12px",left:"5px"}}variant="contained" color="primary" type="submit">Submit</Button>
               </form>
             </div>
               {(()=>{
@@ -155,7 +153,7 @@ class App extends React.Component{
                           }
                           {/* <Dropdown options={[]}/>
                           <Dropdown options={qualities}/> */}
-                          <Button style={{top:"18px",left:"4px"}}onClick={this.download} variant="contained" color="secondary">Done</Button>
+                          <Button style={{top:"18px",left:"4px"}}onClick={this.download} variant="contained" color="primary">Done</Button>
                         </div>
                       </div>
                     </div>

@@ -5,26 +5,47 @@ const theme = createTheme({
     MuiOutlinedInput: {
       root: {
         "& $notchedOutline": {
-          borderColor: "purple"
+          borderColor: "#62676f"
         },
-        "&$focused $notchedOutline": {
-          borderColor: "orange"
+        "&:hover:not($disabled):not($focused):not($error) $notchedOutline": {
+          borderColor: "#62676f"
         },
-        color: "green"
-      },
-      notchedOutline: {}
-    },
-    MuiInput :{
-      "& $Standard":{
-        borderColor: "purple"
+        "& .MuiSvgIcon-root": {
+          color: "#62676f",
+        }
       }
-    }
+    },
+    MuiInputBase :{
+      input:{
+        color:"#00adb5",
+      }
+    },
+    MuiInputLabel: {
+      root: {
+        color:"#007d85"
+      }
+    },
+    MuiInput: {
+      underline: {
+        "&:before": {
+          borderBottomColor:"#62676f"
+        },
+        '&:hover:not($disabled):before': {
+          borderBottomColor:"#62676f"
+        },
+      }
+    },
+    MuiDrawer: {
+      paper: {
+        backgroundColor: "#000000"
+      }
+    },
   },
   palette: {
     primary: {
-      main: '#383d44',
-      light:'#62676f',
-      dark:"#12171d",
+      main: '#007d85',
+      light:'#4dadb5',
+      dark:"#005058",
       contrastText: '#fff',
     },
     secondary: {
@@ -34,7 +55,7 @@ const theme = createTheme({
       contrastText: '#EEEEEE',
     },
     background:{
-      default:"#383d44"
+      default:"#121921"
     }
   },
 });

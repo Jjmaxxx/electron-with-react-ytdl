@@ -49,8 +49,5 @@ const styles = {
       flexBasis:"100%",
       width:0
     },
-    paper:{
-      backgroundColor:"#12171d"
-    }
 };
 export default styles;
