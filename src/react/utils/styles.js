@@ -49,11 +49,36 @@ const styles = {
       flexBasis:"100%",
       width:0
     },
+    playPauseButton:{
+      backgroundColor:"#00adb5", 
+      width:"55px", 
+      height:"55px"
+    },
+    playPauseIcon:{
+      color:"#000000", 
+      marginTop:"5px"
+    },
+    playerBarContainer:{
+      height:"110px",
+      display:"flex", 
+      alignItems:"center",
+      justifyContent:"space-between",
+      positon:'absolute'
+    },
+    playerBar:{
+      // marginLeft:"auto",
+      // paddingLeft:"205px"
+    },
+    volumeBar:{
+      width:"200px",
+      marginRight:"5px",
+      // marginLeft:"auto"
+    },
     video: {
       margin: 0,
       top: 'auto',
       right: 10,
-      bottom: 90,
+      bottom: 143,
       left: 'auto',
       position: 'fixed',
     }

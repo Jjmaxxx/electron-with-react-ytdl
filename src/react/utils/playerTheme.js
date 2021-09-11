@@ -2,11 +2,11 @@ import { createTheme } from '@material-ui/core/styles';
 
 const playerTheme = createTheme({
   overrides:{
-    MuiButton: {
-        root: {
-          borderRadius: 8,
-        }, 
-      },
+    // MuiButton: {
+    //     root: {
+
+    //     }, 
+    //   },
       MuiDrawer: {
         paper: {
           backgroundColor: "#000000"
