@@ -30,8 +30,8 @@ module.exports = {
       
   },
   audioOnly: (vid)=>{
-    let path = "./src/react/videos/"+vid.name +".mp3";
-    // let path = "./public/videos/"+args.name +".mp3";
+    // let path = "./src/react/videos/"+vid.name +".mp3";
+    let path = "./public/videos/"+args.name +".mp3";
     console.log(path);
     return new Promise(resolve=>{
       console.log("run");
@@ -44,7 +44,7 @@ module.exports = {
   mergeVideoAudio: (vid)=>{
     const audio = ytdl(vid.url,{quality:"highestaudio"});
     const video = ytdl(vid.url, { quality: vid.quality});
-    let path = "./src/react/videos/"+vid.name +".mp4";
+    let path = "./public/videos/"+vid.name +".mp4";
     return new Promise(resolve=>{
       const ffmpegProcess = cp.spawn(ffmpeg, [
         // Remove ffmpeg's console spamming

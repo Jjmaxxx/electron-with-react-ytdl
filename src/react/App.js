@@ -1,9 +1,10 @@
 import React from "react";
 //import ReactDOM from 'react-dom';
 // import VideoText from './videoText.js';
+import Player from './Player.js';
 import helperFunctions from './utils/helperFunctions.js';
 import styles from './utils/styles.js';
-import theme from './utils/theme.js';
+import theme from './utils/appTheme.js';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import { Button, Drawer, TextField } from "@material-ui/core";
@@ -80,14 +81,7 @@ class App extends React.Component{
                 <p style = {classes.drawerTabs}>downloads</p>
               </div>
             </Drawer>
-            <Drawer 
-            variant = "permanent" 
-            anchor="bottom"
-            >
-              <div style={{height:"100px"}}>
-                <p>filler text</p>
-              </div>
-            </Drawer>
+            <Player/>
           </div>
         <div style={classes.contentContainer}>
           <div style={classes.content}>

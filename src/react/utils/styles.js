@@ -49,5 +49,13 @@ const styles = {
       flexBasis:"100%",
       width:0
     },
+    video: {
+      margin: 0,
+      top: 'auto',
+      right: 10,
+      bottom: 90,
+      left: 'auto',
+      position: 'fixed',
+    }
 };
 export default styles;
