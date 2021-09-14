@@ -46,10 +46,9 @@ const theme = createTheme({
         "&$selected": {
           backgroundColor: "#4dadb5",
           color: "#007d85",
-          "& .MuiListItemIcon-root": {
-            color: "#007d85"
-          }
         },
+      },
+      button:{
         "&:hover": {
           color: "#4dadb5",
           "& .MuiListItemIcon-root": {
