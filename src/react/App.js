@@ -7,10 +7,14 @@ import styles from './utils/styles.js';
 import theme from './utils/appTheme.js';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { MuiThemeProvider } from "@material-ui/core/styles";
-import { Button, Drawer, TextField } from "@material-ui/core";
+import { Divider, List, ListItem, ListItemIcon, ListItemText, Button, Drawer, TextField } from "@material-ui/core";
+import GetAppIcon from '@material-ui/icons/GetApp';
+import FolderIcon from '@material-ui/icons/Folder';
+import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 //import ResizeableInput from './ResizeableInput.js';
 //import { NativeSelect, MenuList, MenuItem } from '@material-ui/core';
 const { ipcRenderer } = window.require("electron");
+const downloadFolder = './videos/';
 let qualities,link;
 export let windowDimensions;
 let selections = new Map();
@@ -22,10 +26,18 @@ class App extends React.Component{
     this.download = this.download.bind(this);
     this.getName = this.getName.bind(this);
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-    this.state = {width:window.innerWidth, height:window.innerHeight,linkSubmitted:false, fileName:"", fileType:"mp3"};
+    this.state = {
+      width:window.innerWidth, 
+      height:window.innerHeight,
+      linkSubmitted:false, 
+      fileName:"", 
+      fileType:"mp3",
+      foldersList:["null"]
+    };
     //this.state = {variable:'some value'}
   }
   componentDidMount() {
+    this.getFoldersList(downloadFolder);
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
   }
@@ -62,6 +74,16 @@ class App extends React.Component{
     console.log(selections.get('quality'));
     console.log(selections.get('mp3ormp4'));
   }
+  getFoldersList=(path)=>{
+    ipcRenderer.send('getFolders', path);
+    ipcRenderer.on('gotFolders',(event,folders)=>{
+      this.setState({foldersList:folders});
+    })
+    // this.setState({foldersList:folders});
+    // console.log(this.state.foldersList);
+    // console.log('run second');
+    // return ["a","b"]
+  }
   render(){
     const classes = styles;
     return (
@@ -76,10 +98,32 @@ class App extends React.Component{
               variant = "permanent" 
               anchor="left"
             >
-              <div style={{width:"180px"}}>
+              <List>
+                <ListItem button>
+                  <ListItemIcon><GetAppIcon color="primary" /></ListItemIcon>
+                  <ListItemText primary={"Download"}/>
+                </ListItem>
+                <ListItem button>
+                  <ListItemIcon><CreateNewFolderIcon color="primary" /></ListItemIcon>
+                  <ListItemText primary={"Playlists"}/>
+                </ListItem>
+              </List>
+              <Divider style={{backgroundColor:"#007d85"}}/>
+                {/* playlist list */}
+                <List style={{width:"200px"}}>
+                {
+                  this.state.foldersList.map((text) => (
+                    <ListItem button key={text}>
+                      <ListItemText primary={text} />
+                    </ListItem>
+                  ))
+                }
+                </List>
+              <Divider style={{backgroundColor:"#007d85"}}/>
+              {/* <div style={{width:"180px"}}>
                 <p style = {classes.drawerTabs}>youtube download</p>
                 <p style = {classes.drawerTabs}>downloads</p>
-              </div>
+              </div> */}
             </Drawer>
             <Player/>
           </div>

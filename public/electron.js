@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const {ipcRenderer, ipcMain, app, BrowserWindow} = require('electron');
 const isDev = require('electron-is-dev');
 const ytdl = require("./ytdl.js");
@@ -27,6 +28,18 @@ app.whenReady().then(()=>{
           createWindow();
       }
   })
+})
+ipcMain.on('getFolders', async(event,folderPath)=>{
+  folderPath = path.join(__dirname,folderPath);
+  let folders = [];
+  let findPath = async ()=>{
+    fs.readdirSync(folderPath).forEach(file =>{
+      folders.push(file);
+    });
+    console.log(folders);
+  }
+  await findPath();
+  event.reply('gotFolders', folders);
 })
 ipcMain.on('sent-link', async(event, arg)=>{
   console.log(arg)

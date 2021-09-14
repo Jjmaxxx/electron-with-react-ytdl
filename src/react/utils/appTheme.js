@@ -40,6 +40,24 @@ const theme = createTheme({
         backgroundColor: "#000000"
       }
     },
+    MuiListItem: {
+      root: {
+        color:"#007d85",
+        "&$selected": {
+          backgroundColor: "#4dadb5",
+          color: "#007d85",
+          "& .MuiListItemIcon-root": {
+            color: "#007d85"
+          }
+        },
+        "&:hover": {
+          color: "#4dadb5",
+          "& .MuiListItemIcon-root": {
+            color: "#4dadb5"
+          }
+        },
+      }
+    },
   },
   palette: {
     primary: {

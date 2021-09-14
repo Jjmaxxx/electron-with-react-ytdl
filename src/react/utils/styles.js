@@ -49,6 +49,9 @@ const styles = {
       flexBasis:"100%",
       width:0
     },
+    iconClicked:{
+      color:"#5cdfe7"
+    }, 
     playPauseButton:{
       backgroundColor:"#00adb5", 
       width:"55px", 
@@ -62,16 +65,28 @@ const styles = {
       height:"110px",
       display:"flex", 
       alignItems:"center",
-      justifyContent:"space-between",
-      positon:'absolute'
+      // justifyContent:"space-between",
     },
     playerBar:{
       // marginLeft:"auto",
       // paddingLeft:"205px"
     },
+    playPauseIconContainer:{
+      display:"flex",
+      justifyContent:"center",
+      alignItems:"center", 
+      width:"100%"
+    },
+    playerIcons:{
+      marginTop:"5px"
+    },
+    timeSliderText:{
+      color:"#00adb5",
+      marginTop:"3px"
+    },
     volumeBar:{
-      width:"200px",
-      marginRight:"5px",
+      width:"400px",
+      marginRight:"10px",
       // marginLeft:"auto"
     },
     video: {
@@ -81,6 +96,25 @@ const styles = {
       bottom: 143,
       left: 'auto',
       position: 'fixed',
+    },
+    vidImage:{
+      color:"#000000",
+      marginTop:"3px"
+    },
+    vidInfoContainer:{
+      display:"flex",
+      alignItems:"center", 
+      width:"400px",
+      marginLeft:"5px"
+    },
+    vidImageContainer:{
+      backgroundColor:"#00adb5", 
+      width:"50px",
+      height:"50px", 
+      marginLeft:"18px", 
+      display:"flex", 
+      justifyContent:"center",
+      alignItems:"center"
     }
 };
 export default styles;

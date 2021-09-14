@@ -5,7 +5,7 @@ console.log("running");
 const cp = require('child_process');
 const { contextIsolated } = require("process");
 
-
+let vidInfo;
 module.exports = {
   createReadableStream: (link)=>{
     return new Promise(resolve=>{
@@ -23,7 +23,9 @@ module.exports = {
             qualities.push({name:elementQuality, value: element.itag})
           }
         });
-        console.log(qualities);
+        //console.log(qualities);
+        vidInfo = info;
+        console.log(vidInfo);
         resolve({name:defaultName, qualityList:qualities});
     });
     })
@@ -31,10 +33,9 @@ module.exports = {
   },
   audioOnly: (vid)=>{
     // let path = "./src/react/videos/"+vid.name +".mp3";
-    let path = "./public/videos/"+args.name +".mp3";
+    let path = "./public/videos/downloads/"+vid.name +".mp3";
     console.log(path);
     return new Promise(resolve=>{
-      console.log("run");
       ytdl(vid.url,{filter:"audioonly"}).pipe(fs.createWriteStream(path)).on('finish',()=>{
         console.log('finish');
         resolve(path);
@@ -44,7 +45,7 @@ module.exports = {
   mergeVideoAudio: (vid)=>{
     const audio = ytdl(vid.url,{quality:"highestaudio"});
     const video = ytdl(vid.url, { quality: vid.quality});
-    let path = "./public/videos/"+vid.name +".mp4";
+    let path = "./public/videos/downloads/"+vid.name +".mp4";
     return new Promise(resolve=>{
       const ffmpegProcess = cp.spawn(ffmpeg, [
         // Remove ffmpeg's console spamming
