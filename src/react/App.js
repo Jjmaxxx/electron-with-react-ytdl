@@ -2,16 +2,16 @@ import React from "react";
 //import ReactDOM from 'react-dom';
 // import VideoText from './videoText.js';
 import Player from './Player.js';
+//import CreateFolderForm from './CreateFolderForm.js';
 import helperFunctions from './utils/helperFunctions.js';
 import styles from './utils/styles.js';
 import theme from './utils/appTheme.js';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { MuiThemeProvider } from "@material-ui/core/styles";
-import { IconButton, Divider, List, ListItem, ListItemIcon, ListItemText, Button, Drawer, TextField } from "@material-ui/core";
+import { Divider, List, ListItem, ListItemIcon, ListItemText, Button, Drawer, TextField } from "@material-ui/core";
 import GetAppIcon from '@material-ui/icons/GetApp';
-import FolderIcon from '@material-ui/icons/Folder';
-import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import AddIcon from '@material-ui/icons/Add';
+import CreateFolderForm from "./CreateFolderForm.js";
 //import ResizeableInput from './ResizeableInput.js';
 //import { NativeSelect, MenuList, MenuItem } from '@material-ui/core';
 const { ipcRenderer } = window.require("electron");
@@ -115,9 +115,7 @@ class App extends React.Component{
               </List>
               <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
                 <div style={{color:"#007d85", fontSize:"17px"}}>Playlists</div>
-                  <IconButton>
-                    <CreateNewFolderIcon color="primary" fontSize="large"/>
-                  </IconButton>
+                  <CreateFolderForm/>
               </div>
               <Divider style={{backgroundColor:"#007d85"}}/>
                 {/* playlist list */}

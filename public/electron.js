@@ -1,8 +1,9 @@
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra')
 const {ipcRenderer, ipcMain, app, BrowserWindow} = require('electron');
 const isDev = require('electron-is-dev');
 const ytdl = require("./ytdl.js");
+let downloadFolder;
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
@@ -30,10 +31,10 @@ app.whenReady().then(()=>{
   })
 })
 ipcMain.on('getFolders', async(event,folderPath)=>{
-  folderPath = path.join(__dirname,folderPath);
+  downloadFolder = path.join(__dirname,folderPath);
   let folders = [];
   let findPath = async ()=>{
-    fs.readdirSync(folderPath).forEach(file =>{
+    fs.readdirSync(downloadFolder).forEach(file =>{
       folders.push(file);
     });
     console.log(folders);
@@ -45,6 +46,10 @@ ipcMain.on('sent-link', async(event, arg)=>{
   console.log(arg)
   let videoData = await ytdl.createReadableStream(arg);
   event.reply('vid-info', videoData);
+})
+ipcMain.on('createFolder', (event, folderName)=>{
+  let folder = path.join(downloadFolder,folderName);
+  fs.ensureDirSync(folder);
 })
 ipcMain.on('download', async(event,args)=>{
   console.log(args);
