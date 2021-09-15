@@ -3,10 +3,10 @@ const fs = require('fs-extra')
 const {ipcRenderer, ipcMain, app, BrowserWindow} = require('electron');
 const isDev = require('electron-is-dev');
 const ytdl = require("./ytdl.js");
-let downloadFolder;
+let win, downloadFolder;
 function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 1000,
     height: 1000,
     webPreferences: {
@@ -50,6 +50,7 @@ ipcMain.on('sent-link', async(event, arg)=>{
 ipcMain.on('createFolder', (event, folderName)=>{
   let folder = path.join(downloadFolder,folderName);
   fs.ensureDirSync(folder);
+  win.webContents.send('newFolder');
 })
 ipcMain.on('download', async(event,args)=>{
   console.log(args);

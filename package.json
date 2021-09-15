@@ -12,7 +12,6 @@
     "child_process": "^1.0.2",
     "ffmpeg-static": "^4.4.0",
     "fs": "^0.0.1-security",
-    "fs-extra": "^10.0.0",
     "nodemon": "^2.0.12",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

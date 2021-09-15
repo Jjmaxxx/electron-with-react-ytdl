@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconButton, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@material-ui/core";
+import { IconButton, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 const { ipcRenderer } = window.require("electron");
 
