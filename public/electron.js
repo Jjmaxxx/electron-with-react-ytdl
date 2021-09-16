@@ -42,6 +42,19 @@ ipcMain.on('getFolders', async(event,folderPath)=>{
   await findPath();
   event.reply('gotFolders', folders);
 })
+ipcMain.on("getFiles", async(event, folderName)=>{
+  folderName = path.join(downloadFolder, folderName);
+  let files = [];
+  let findPath = async ()=>{
+    fs.readdirSync(folderName).forEach(file =>{
+      files.push(file);
+      console.log(file)
+    });
+    console.log(files);
+  }
+  await findPath();
+  event.reply('gotFiles', files);
+})
 ipcMain.on('sent-link', async(event, arg)=>{
   console.log(arg)
   let videoData = await ytdl.createReadableStream(arg);

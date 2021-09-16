@@ -115,6 +115,39 @@ const styles = {
       display:"flex", 
       justifyContent:"center",
       alignItems:"center"
+    },
+    playlistHeading:{
+      backgroundColor:"#0d1217", 
+      color:"white", 
+      width:"100%",
+      height:"200px",
+      display: 'flex',
+      alignItems: 'center'
+    },
+    playlistImageContainer:{
+      marginLeft:"250px", 
+      display:"flex"
+    },
+    playlistImage:{
+      width:"110px", 
+      height:"110px",
+      backgroundColor:"#00adb5"
+    },
+    playlistTitleContainer:{
+      display:"flex", 
+      flexDirection:"column", 
+      justifyContent:"flex-end"
+    },
+    playlistTitle:{
+      fontWeight:"bolder", 
+      fontSize:"50px", 
+      color:"#00adb5", 
+      marginLeft:"10px"
+    },
+    playlistDescription:{
+      fontSize:"15px", 
+      color:"#00adb5", 
+      marginLeft:"10px"
     }
 };
 export default styles;
