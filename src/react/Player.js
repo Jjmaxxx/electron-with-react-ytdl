@@ -15,6 +15,8 @@ import LoopIcon from '@material-ui/icons/Loop';
 import playerTheme from './utils/playerTheme.js';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { MuiThemeProvider } from "@material-ui/core/styles";
+import helperFunctions from './utils/helperFunctions.js';
+
 
 const video ="videos/downloads/The Universe in 4 Minutes.mp4"
 let fileType = video.substring(video.length-3);
@@ -65,17 +67,7 @@ class Player extends React.Component{
         if(!this.state.seeking){
             state.playedSeconds = Math.trunc(state.playedSeconds);
             this.setState({rawVideoTime:state.playedSeconds});
-            if(((state.playedSeconds - (Math.floor(state.playedSeconds/60) *60)) < 10 && state.playedSeconds <60)){
-                this.setState({videoTime:Math.floor(state.playedSeconds/60)+ ":0" +Math.floor(state.playedSeconds)})
-            }else if(Math.floor(state.playedSeconds) < 60){
-                this.setState({videoTime:Math.floor(state.playedSeconds/60)+ ":" +Math.floor(state.playedSeconds)})
-            }
-            else if((state.playedSeconds - (Math.floor(state.playedSeconds/60) *60)) < 10 && state.playedSeconds >59){
-                this.setState({videoTime:Math.floor(state.playedSeconds/60)+ ":0" +Math.floor(state.playedSeconds- Math.floor(state.playedSeconds/60) * 60)})  
-            }else{
-                this.setState({videoTime:Math.floor(state.playedSeconds/60)+ ":" +Math.floor(state.playedSeconds - Math.floor(state.playedSeconds/60) * 60)})
-            }
-        // console.log(this.state.videoTime);
+            this.setState({videoTime:helperFunctions.getFancyTime(state.playedSeconds)});
         }  
     }
     videoDuration=(duration)=>{

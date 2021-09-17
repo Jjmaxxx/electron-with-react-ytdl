@@ -96,6 +96,7 @@ const styles = {
       bottom: 143,
       left: 'auto',
       position: 'fixed',
+      zIndex:1,
     },
     vidImage:{
       color:"#000000",

@@ -3,6 +3,7 @@ const fs = require('fs-extra')
 const {ipcRenderer, ipcMain, app, BrowserWindow} = require('electron');
 const isDev = require('electron-is-dev');
 const ytdl = require("./ytdl.js");
+const { getAudioDurationInSeconds } = require('get-audio-duration');
 let win, downloadFolder;
 function createWindow() {
   // Create the browser window.
@@ -44,16 +45,27 @@ ipcMain.on('getFolders', async(event,folderPath)=>{
 })
 ipcMain.on("getFiles", async(event, folderName)=>{
   folderName = path.join(downloadFolder, folderName);
-  let files = [];
-  let findPath = async ()=>{
-    fs.readdirSync(folderName).forEach(file =>{
-      files.push(file);
-      console.log(file)
+  let getFiles = new Promise(resolve=>{
+    let files = [];
+    let num = 0;
+    fs.readdirSync(folderName).forEach(async (file, index, array) =>{
+      //index doesnt work because it will keep adding before getaudioduration is fully done
+      let filePath = path.join(folderName,file)
+      await getAudioDurationInSeconds(filePath).then((duration) => {
+        num+=1;
+        files.push([file,duration]);
+        if(num === array.length){
+          console.log('done');
+          resolve(files);
+        }
+      }); 
     });
-    console.log(files);
-  }
-  await findPath();
-  event.reply('gotFiles', files);
+  })
+  getFiles.then((data)=>{
+    event.reply('gotFiles', data);
+  })
+  // console.log(files)
+  // event.reply('gotFiles', files);
 })
 ipcMain.on('sent-link', async(event, arg)=>{
   console.log(arg)
