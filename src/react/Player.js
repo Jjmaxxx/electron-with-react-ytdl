@@ -26,7 +26,7 @@ class Player extends React.Component{
         this.play = this.play.bind(this);
         this.state = {
             playing: false,
-            volume:0.05,
+            volume:0,
             videoTime:"0:00",
             rawVideoTime:0,
             duration:0,

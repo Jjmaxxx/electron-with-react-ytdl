@@ -43,6 +43,15 @@ const theme = createTheme({
     MuiListItem: {
       root: {
         color:"#007d85",
+        '&$selected': {
+          backgroundColor: "#4dadb5",
+          "& .MuiSvgIcon-root ": {
+            color: "#007d85"
+          }
+        },
+      },
+      selected:{
+        backgroundColor: "red",
       },
       button:{
         "&:hover": {
@@ -59,7 +68,7 @@ const theme = createTheme({
           color: "#4dadb5",
         },
       }
-    }
+    },
   },
   palette: {
     primary: {

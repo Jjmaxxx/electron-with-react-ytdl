@@ -38,7 +38,6 @@ ipcMain.on('getFolders', async(event,folderPath)=>{
     fs.readdirSync(downloadFolder).forEach(file =>{
       folders.push(file);
     });
-    console.log(folders);
   }
   await findPath();
   event.reply('gotFolders', folders);
@@ -55,7 +54,6 @@ ipcMain.on("getFiles", async(event, folderName)=>{
         num+=1;
         files.push([file,duration]);
         if(num === array.length){
-          console.log('done');
           resolve(files);
         }
       }); 
