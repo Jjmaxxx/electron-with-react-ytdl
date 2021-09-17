@@ -29,7 +29,8 @@ class App extends React.Component{
       fileName:"", 
       fileType:"mp3",
       foldersList:["null"],
-      page:"downloader"
+      page:"downloader",
+      file:""
     };
     //this.state = {variable:'some value'}
   }
@@ -55,11 +56,13 @@ class App extends React.Component{
     })
   }
   handlePlaylistSelect=(event,folderName)=>{
-    console.log(folderName);
     this.setState({page:folderName});
   }
   handleDownloadSelect=(event)=>{
     this.setState({page:"downloader"});
+  }
+  handleFileSelect=(newFile)=>{
+    this.setState({file:newFile});
   }
   render(){
     const classes = styles;
@@ -110,15 +113,14 @@ class App extends React.Component{
                 <p style = {classes.drawerTabs}>downloads</p>
               </div> */}
             </Drawer>
-            <Player/>
+            <Player key ={this.state.file} file={downloadFolder+this.state.page+"/"+this.state.file}/>
           </div>
           {(()=>{
-            console.log(this.state.page);
             let component;
             if(this.state.page === "downloader"){
               component = <YoutubeDownload/>;
             }else{
-              component = <Playlist path={this.state.page}/>
+              component = <Playlist sendFileToParent = {this.handleFileSelect}key= {this.state.page} path={this.state.page}/>
             }
             return(
               component

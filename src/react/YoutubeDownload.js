@@ -94,22 +94,22 @@ class YoutubeDownload extends React.Component{
                                     {helperFunctions.setOptions([{name:"mp3",value:"mp3"},{name:"mp4",value:"mp4"}])}
                                     </TextField>
                                     {this.state.fileType==="mp4" &&
-                                    <TextField
-                                        label="Quality"
-                                        style={{minWidth:10, top:"20px"}}
-                                        id="outlined-select-currency-native"
-                                        select
-                                        color="secondary"
-                                        onChange= {(e)=>{this.changeOption(e,"quality")}}
-                                        SelectProps={{
-                                        native: true,
-                                        }}
-                                        size="small"
-                                        // helperText="Select Type"
-                                        variant="outlined"
-                                    >
-                                        {helperFunctions.setOptions(qualities)}
-                                    </TextField> 
+                                        <TextField
+                                            label="Quality"
+                                            style={{minWidth:10, top:"20px"}}
+                                            id="outlined-select-currency-native"
+                                            select
+                                            color="secondary"
+                                            onChange= {(e)=>{this.changeOption(e,"quality")}}
+                                            SelectProps={{
+                                            native: true,
+                                            }}
+                                            size="small"
+                                            // helperText="Select Type"
+                                            variant="outlined"
+                                        >
+                                            {helperFunctions.setOptions(qualities)}
+                                        </TextField> 
                                     }
                                     {/* <Dropdown options={[]}/>
                                     <Dropdown options={qualities}/> */}

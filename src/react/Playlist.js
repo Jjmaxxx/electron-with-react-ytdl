@@ -5,18 +5,21 @@ import { Divider, List, ListItem, ListItemIcon, ListItemText} from "@material-ui
 import FolderIcon from '@material-ui/icons/Folder';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import CircularProgress from '@material-ui/core/CircularProgress';
 const { ipcRenderer } = window.require("electron");
 class Playlist extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            filesList:[]
+            filesList:[],
+            loading:true
         }
     }
     componentDidMount(){
         ipcRenderer.send("getFiles",this.props.path);
         ipcRenderer.on('gotFiles',(event,files)=>{
             this.setState({filesList:files});
+            this.setState({loading:false});
             console.log(this.state.filesList);
         })
         //console.log(this.props.path);
@@ -24,8 +27,12 @@ class Playlist extends React.Component{
     componentWillUnmount(){
         ipcRenderer.removeAllListeners("gotFiles");
     }
+    sendFileToParent = (event,file)=>{
+        this.props.sendFileToParent(file);
+    }
     render(){
         const classes = styles;
+        const {loading} = this.state;
         return(
             <div>
               <div style={classes.playlistHeading}>
@@ -44,9 +51,15 @@ class Playlist extends React.Component{
                 </div>
               </div>
               <Divider style={{backgroundColor:"#007d85"}}/>
+
+              {loading && (
+                <div style={{display:"flex",justifyContent:"center", alignItems:"center", marginLeft:"180px",height:"100%",marginTop:"20px"}}>
+                    <CircularProgress color="primary"/>
+                </div>
+              )}
               <List style = {{display:'flex',flexDirection:"column", width:"100%",padding:"0"}}>
                   {this.state.filesList.map((data) => (
-                    <ListItem style={{backgroundColor:"#0d1217",width:"100%"}} color="primary" button key={data[0]}>
+                    <ListItem style={{backgroundColor:"#0d1217",width:"100%"}} onClick={(event)=>{this.sendFileToParent(event, data[0])}} color="primary" button key={data[0]}>
                       <div style= {{marginLeft:"200px",display:"flex",width:"100%"}}>
                         <ListItemIcon style={{marginTop:"3px"}}>
                             <PlayCircleFilledIcon color="primary" />

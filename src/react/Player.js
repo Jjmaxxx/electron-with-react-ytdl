@@ -18,26 +18,28 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import helperFunctions from './utils/helperFunctions.js';
 
 
-const video ="videos/downloads/The Universe in 4 Minutes.mp4"
-let fileType = video.substring(video.length-3);
-console.log(fileType)
-let vidTitle = video.substring(0,video.length-4).substring(video.indexOf('/')+1);
-vidTitle=vidTitle.substring(vidTitle.indexOf('/')+1);
-console.log(vidTitle);
+let video,fileType,vidTitle;
+
 class Player extends React.Component{
     constructor(props){
         super(props);
         this.play = this.play.bind(this);
         this.state = {
-            playing: true,
-            volume:0,
+            playing: false,
+            volume:0.05,
             videoTime:"0:00",
             rawVideoTime:0,
-            duration:"0:00",
+            duration:0,
             seeking:false,
             loop:false,
             shuffle:false
         }
+    }
+    componentDidMount(){
+        video=this.props.file;    
+        fileType = video.substring(video.length-3);
+        vidTitle = video.substring(0,video.length-4).substring(video.lastIndexOf('/')+1);
+        this.setState({playing:true});
     }
     ref = player => {
         this.player = player;
@@ -70,9 +72,8 @@ class Player extends React.Component{
             this.setState({videoTime:helperFunctions.getFancyTime(state.playedSeconds)});
         }  
     }
-    videoDuration=(duration)=>{
-        this.setState({duration:duration});
-        console.log(this.state.duration);
+    videoDuration=(vidDuration)=>{
+        this.setState({duration:vidDuration});
         // console.log("minutes: " + Math.floor(duration/60) + "seconds: " + Math.floor(((Math.floor(duration/60)-duration/60) * 60)*-1)); 
     }
     render(){
@@ -85,6 +86,7 @@ class Player extends React.Component{
                     <ReactPlayer 
                         ref={this.ref}
                         url = {video}
+                        key= {video}
                         playing={playing}
                         volume={volume}
                         loop={loop}
@@ -222,7 +224,7 @@ class Player extends React.Component{
                                 />
                             </Grid>
                             <Grid item>
-                                <p style= {classes.timeSliderText}>{Math.floor(duration/60) + ":"+ Math.floor(((Math.floor(duration/60)-duration/60) * 60)*-1)}</p>
+                                <p style= {classes.timeSliderText}>{helperFunctions.getFancyTime(duration)}</p>
                             </Grid>
                         </Grid>
                     </Drawer>
