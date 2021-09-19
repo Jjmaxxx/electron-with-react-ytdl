@@ -17,6 +17,7 @@ class Playlist extends React.Component{
             selectedIndex:null,
             playing:false,
             openFileOptionsMenu:false,
+            anchorEl:null,
         }
     }
     componentDidMount(){
@@ -37,14 +38,16 @@ class Playlist extends React.Component{
         console.log(this.state.selectedIndex);
     }
     moreFileOptionsButton = (event)=>{
-        this.setState({openFileOptionsMenu: true},()=>{
-            console.log(this.state.openFileOptionsMenu);
-            console.log(this.state.selectedIndex);
-        });
+        if(this.state.openFileOptionsMenu){
+            this.setState({openFileOptionsMenu: false});
+        }else{
+            this.setState({openFileOptionsMenu: true});
+        }
+        this.setState({anchorEl:event.currentTarget});
     }
     render(){
         const classes = styles;
-        const {loading, playing, selectedIndex, openFileOptionsMenu} = this.state;
+        const {anchorEl, loading, playing, selectedIndex, openFileOptionsMenu} = this.state;
         return(
             <div>
               <div style={classes.playlistHeading}>
@@ -69,48 +72,53 @@ class Playlist extends React.Component{
                     <CircularProgress color="primary"/>
                 </div>
               )}
-              <List style = {{display:'flex',flexDirection:"column", width:"100%",padding:"0"}}>
+              <List style = {{display:'flex',flexDirection:"column", padding:"0", height: "610px",overflow: "auto"}}>
                   {this.state.filesList.map((data,index) => (
-                    <ListItem 
-                        style={{backgroundColor:"#0d1217",width:"100%"}} 
-                        onClick={(event)=>{this.handleFileClick(event, data[0], index)}} 
-                        color="primary" 
-                        button 
-                        key={index}
-                    >
-                      <div style= {{marginLeft:"200px",display:"flex",width:"100%"}}>
-                        <ListItemIcon style={{marginTop:"3px"}}>
-                            {
-                                selectedIndex === index ? 
-                                <PlayArrowIcon color="primary"/>
-                                :
-                                <PlayCircleFilledIcon color="primary" />
-                            }
-                            
-                        </ListItemIcon>
-                        <ListItemText 
-                            style={{width:"100%", textOverflow: "ellipsis",whiteSpace:"nowrap",overflow:"hidden"}}
-                            primary={data[0].substring(0,data[0].length-4)}
-                        />
-                        <div style={{display:"flex", justifyContent:"flex-end",width:"100%",alignContent:"space-between",gap:"15px"}}>
-                            <p>{helperFunctions.getFancyTime(Math.trunc(data[1]))}</p>
-                            <IconButton onClick={this.moreFileOptionsButton} style={{marginTop:"12px",width:"8px",height:"8px", zIndex:100}}>
-                                <MoreHorizIcon color="primary"/>
+                    <div style ={{display:"flex", width:"100%", backgroundColor:"#0d1217"}}>
+                        <ListItem 
+                            style={{width:"100%",paddingRight:0}} 
+                            onClick={(event)=>{this.handleFileClick(event, data[0], index)}} 
+                            color="primary" 
+                            button 
+                            key={index}
+                        >
+                        <div style= {{marginLeft:"200px",display:"flex",width:"100%"}}>
+                            <ListItemIcon style={{marginTop:"3px"}}>
                                 {
-                                    (openFileOptionsMenu && selectedIndex === index ) && 
-                                    <Menu
-                                     open={true}
-                                     
-                                    >
-                                        <MenuItem>hello</MenuItem>
-                                        <MenuItem>hello</MenuItem>
-                                        <MenuItem>hello</MenuItem>
-                                    </Menu>
+                                    selectedIndex === index ? 
+                                    <PlayArrowIcon color="primary"/>
+                                    :
+                                    <PlayCircleFilledIcon color="primary" />
                                 }
-                            </IconButton>
+                                
+                            </ListItemIcon>
+                            <ListItemText 
+                                style={{width:"100%", textOverflow: "ellipsis",whiteSpace:"nowrap",overflow:"hidden"}}
+                                primary={data[0].substring(0,data[0].length-4)}
+                            />
+
+                            <div style={{display:"flex", justifyContent:"flex-end",width:"100%", padding:0}}>
+                                <p>{helperFunctions.getFancyTime(Math.trunc(data[1]))}</p>
+                            </div>
                         </div>
-                      </div>
-                    </ListItem>
+                        </ListItem>
+                        <div style={{display:"flex",alignItems:"flex-end", marginBottom:"8px"}}>
+                        <IconButton onClick={this.moreFileOptionsButton}>
+                        <MoreHorizIcon color="primary"/>
+                        {
+                            (openFileOptionsMenu ) && 
+                            <Menu
+                            open={openFileOptionsMenu}
+                            anchorEl={anchorEl}
+                            color="primary"
+                            >
+                                <MenuItem>Add to Queue</MenuItem>
+                                <MenuItem>Delete</MenuItem>
+                            </Menu>
+                        }
+                        </IconButton>
+                    </div>
+                    </div>
                   ))}
               </List>
             </div>

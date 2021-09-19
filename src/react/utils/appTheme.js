@@ -50,9 +50,6 @@ const theme = createTheme({
           }
         },
       },
-      selected:{
-        backgroundColor: "red",
-      },
       button:{
         "&:hover": {
           color: "#4dadb5",
@@ -69,6 +66,16 @@ const theme = createTheme({
         },
       }
     },
+    MuiMenu:{
+      paper:{
+        backgroundColor:"#121921",
+      }
+    },
+    MuiMenuItem:{
+      root:{
+        color:"#4dadb5"
+      }
+    }
   },
   palette: {
     primary: {

@@ -43,6 +43,12 @@ class Player extends React.Component{
     }
     ref = player => {
         this.player = player;
+        console.log(this.player);
+    }
+    playerReady= ()=>{
+        if(video === null){
+            console.log('no video found')
+        }
     }
     play=()=>{
         if(this.state.playing){
@@ -66,6 +72,7 @@ class Player extends React.Component{
         }
     }
     videoProgress= (state)=>{
+        console.log(state);
         if(!this.state.seeking){
             state.playedSeconds = Math.trunc(state.playedSeconds);
             this.setState({rawVideoTime:state.playedSeconds});
@@ -93,6 +100,7 @@ class Player extends React.Component{
                         pip={true}
                         width= "250px"
                         height="200px"
+                        onReady={this.playerReady}
                         onProgress={this.videoProgress}
                         onDuration={this.videoDuration}
                         style= {classes.video}
