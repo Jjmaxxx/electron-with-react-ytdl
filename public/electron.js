@@ -47,12 +47,13 @@ ipcMain.on("getFiles", async(event, folderName)=>{
   let getFiles = new Promise(resolve=>{
     let files = [];
     let num = 0;
-    fs.readdirSync(folderName).forEach(async (file, index, array) =>{
+    let folderFiles = fs.readdirSync(folderName);
+    folderFiles.forEach(async (file, index, array) =>{
       //index doesnt work because it will keep adding before getaudioduration is fully done
       let filePath = path.join(folderName,file)
       await getAudioDurationInSeconds(filePath).then((duration) => {
         num+=1;
-        files.push([file,duration]);
+        files.push([file,duration,fs.statSync(filePath).birthtimeMs]);
         if(num === array.length){
           resolve(files);
         }
@@ -60,7 +61,20 @@ ipcMain.on("getFiles", async(event, folderName)=>{
     });
   })
   getFiles.then((data)=>{
-    event.reply('gotFiles', data);
+    //console.log(data);
+    let sortFiles = new Promise(resolve=>{
+      resolve(
+        data.sort((a,b)=>{
+          console.log(a[2]);
+          console.log(b[2]);
+          return(b[2] - a[2]);
+        })
+      )
+    })
+    sortFiles.then((data)=>{
+      event.reply('gotFiles', data);
+    })
+    //console.log(data);
   })
   // console.log(files)
   // event.reply('gotFiles', files);

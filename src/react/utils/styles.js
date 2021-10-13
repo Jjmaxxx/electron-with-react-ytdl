@@ -93,8 +93,8 @@ const styles = {
     },
     video: {
       margin: 0,
-      right: 10,
-      bottom: 143,
+      right: 1,
+      bottom: 170,
       left: 'auto',
       position: 'fixed',
       zIndex:1,

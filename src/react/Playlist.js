@@ -24,10 +24,11 @@ class Playlist extends React.Component{
     componentDidMount(){
         ipcRenderer.send("getFiles",this.props.path);
         ipcRenderer.on('gotFiles',(event,files)=>{
-            this.setState({filesList:files});
+            this.setState({filesList:files},()=>{
+                console.log(this.state.filesList);
+            });
             this.setState({loading:false});
         })
-        console.log(this.props.appHeight);
         //console.log(this.props.path);
     }
     componentWillUnmount(){
@@ -56,7 +57,7 @@ class Playlist extends React.Component{
     }
     render(){
         const classes = styles;
-        const {anchorEl, loading, playing, songListHeight, selectedIndex, openFileOptionsMenu} = this.state;
+        const {anchorEl, loading, songListHeight, selectedIndex, openFileOptionsMenu} = this.state;
         return(
             <div>
               <div style={classes.playlistHeading}>
@@ -81,7 +82,7 @@ class Playlist extends React.Component{
                     <CircularProgress color="primary"/>
                 </div>
               )}
-              <List style = {{display:'flex',flexDirection:"column", padding:"0", height: this.state.songListHeight,overflow: "auto"}}>
+              <List style = {{display:'flex',flexDirection:"column", padding:"0", height: songListHeight,overflow: "auto"}}>
                   {this.state.filesList.map((data,index) => (
                     <div style ={{display:"flex", width:"100%", backgroundColor:"#0d1217"}}>
                         <ListItem 

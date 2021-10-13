@@ -18,7 +18,7 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import helperFunctions from './utils/helperFunctions.js';
 
 
-let video,fileType,vidTitle;
+let video,fileType,vidTitle,pipWidth,pipHeight;
 
 class Player extends React.Component{
     constructor(props){
@@ -39,11 +39,17 @@ class Player extends React.Component{
         video=this.props.file;    
         fileType = video.substring(video.length-3);
         vidTitle = video.substring(0,video.length-4).substring(video.lastIndexOf('/')+1);
+        if(fileType === "mp4"){
+            pipWidth = "250px";
+            pipHeight = "120px";
+        }else{
+            pipWidth = "0px";
+            pipHeight = "0px";
+        }
         this.setState({playing:true});
     }
     ref = player => {
         this.player = player;
-        console.log(this.player);
     }
     playerReady= ()=>{
         console.log("ready");
@@ -99,8 +105,8 @@ class Player extends React.Component{
                         volume={volume}
                         loop={loop}
                         pip={true}
-                        width= "250px"
-                        height="150px"
+                        width= {pipWidth}
+                        height= {pipHeight}
                         onReady={this.playerReady}
                         onProgress={this.videoProgress}
                         onDuration={this.videoDuration}
