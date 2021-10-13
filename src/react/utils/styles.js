@@ -2,6 +2,7 @@
 const styles = {
     root: {
       display: 'flex',
+      height:"0px"
       // backgroundColor:'black',
     },
     appBar: {
@@ -25,7 +26,8 @@ const styles = {
       overflow: 'auto',
     },
     content: {
-      marginLeft:"180px", 
+      marginLeft:"180px",
+      marginBottom:"161px"
     },
     contentContainer: {
       flexGrow: 1,
@@ -91,7 +93,6 @@ const styles = {
     },
     video: {
       margin: 0,
-      top: 'auto',
       right: 10,
       bottom: 143,
       left: 'auto',

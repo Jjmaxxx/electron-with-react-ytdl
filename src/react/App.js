@@ -69,7 +69,7 @@ class App extends React.Component{
     return (
       //App
       //, backgroundColor:"#222831"}
-      <div className="App" style={{height:"90vh"}}>
+      <div className="App" style={{height:"100%",overflow: "hidden"}}>
         <MuiThemeProvider theme={theme}>
           <CssBaseline/>
           <div color="primary" style= {classes.root} >
@@ -120,7 +120,7 @@ class App extends React.Component{
             if(this.state.page === "downloader"){
               component = <YoutubeDownload/>;
             }else{
-              component = <Playlist sendFileToParent = {this.handleFileSelect}key= {this.state.page} path={this.state.page}/>
+              component = <Playlist appHeight = {this.state.height} sendFileToParent = {this.handleFileSelect} key= {this.state.page} path={this.state.page}/>
             }
             return(
               component

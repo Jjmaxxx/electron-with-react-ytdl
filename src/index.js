@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './react/App';
 import reportWebVitals from './reportWebVitals';
-
+document.documentElement.style.height = "100%";
+document.body.style.height = "100%";
+document.getElementById('root').style.height="100%";
 ReactDOM.render(
   <React.StrictMode>
     <App />

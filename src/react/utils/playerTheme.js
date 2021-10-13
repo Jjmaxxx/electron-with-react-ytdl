@@ -12,6 +12,25 @@ const playerTheme = createTheme({
           backgroundColor: "#000000"
         }
       }, 
+      MuiCssBaseline: {
+        '@global': {
+          '*': {
+            'scrollbar-width': 'thin',
+          },
+          '*::-webkit-scrollbar': {
+            width: '10px',
+            height: '10px',
+            
+          },
+          '*::-webkit-scrollbar-track': {
+            backgroundColor:"#00adb5"
+            
+          },
+          '*::-webkit-scrollbar-thumb': {
+            backgroundColor:"#007d85",
+          }
+        }
+      }
   },
   palette: {
     primary: {

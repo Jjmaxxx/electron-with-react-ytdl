@@ -46,6 +46,7 @@ class Player extends React.Component{
         console.log(this.player);
     }
     playerReady= ()=>{
+        console.log("ready");
         if(video === null){
             console.log('no video found')
         }
@@ -99,7 +100,7 @@ class Player extends React.Component{
                         loop={loop}
                         pip={true}
                         width= "250px"
-                        height="200px"
+                        height="150px"
                         onReady={this.playerReady}
                         onProgress={this.videoProgress}
                         onDuration={this.videoDuration}
@@ -108,6 +109,7 @@ class Player extends React.Component{
                     <Drawer 
                         variant = "permanent" 
                         anchor="bottom"
+                        style={{height:"200px"}}
                     >
                         <div style={classes.playerBarContainer}>
                             <div style={classes.vidInfoContainer}>
@@ -207,7 +209,7 @@ class Player extends React.Component{
                                     </Grid>
                                 </Grid>
                             </div>
-                        <Grid style={{width:"60%",marginLeft:"auto",marginRight:"auto",marginBottom:"10px"}} container spacing={2} >
+                        <Grid style={{width:"60%",marginLeft:"auto",marginRight:"auto",marginBottom:"5px"}} container spacing={2} >
                             <Grid item>
                                 <p style= {classes.timeSliderText}>{videoTime}</p>
                             </Grid>
