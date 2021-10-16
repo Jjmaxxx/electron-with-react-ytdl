@@ -1,7 +1,6 @@
 const fs = require("fs");
 const ytdl = require("ytdl-core");
 const ffmpeg = require('ffmpeg-static');
-console.log("running");
 const cp = require('child_process');
 const { contextIsolated } = require("process");
 
@@ -13,7 +12,6 @@ module.exports = {
       getName().then((info)=>{
         //console.log(info);
         let defaultName = info.videoDetails.title;
-        console.log(defaultName);
         let uniqueQuality = new Map();
         let qualities = [];
         info.formats.forEach((element)=>{
@@ -25,7 +23,6 @@ module.exports = {
         });
         //console.log(qualities);
         vidInfo = info;
-        console.log(vidInfo);
         resolve({name:defaultName, qualityList:qualities});
     });
     })
@@ -34,12 +31,12 @@ module.exports = {
   audioOnly: (vid)=>{
     // let path = "./src/react/videos/"+vid.name +".mp3";
     let path = "./public/videos/downloads/"+vid.name +".mp3";
-    console.log(path);
     return new Promise(resolve=>{
-      ytdl(vid.url,{filter:"audioonly"}).pipe(fs.createWriteStream(path)).on('finish',()=>{
-        console.log('finish');
+      ytdl(vid.url,{filter:"audioonly"}).on('progress',(_,totalDownloaded,total)=>{
+        console.log((totalDownloaded/total)*100 + "%");
+      }).pipe(fs.createWriteStream(path)).on('finish',()=>{
         resolve(path);
-      });
+      })
     })
   },
   mergeVideoAudio: (vid)=>{

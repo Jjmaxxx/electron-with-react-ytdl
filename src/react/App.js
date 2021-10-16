@@ -117,6 +117,7 @@ class App extends React.Component{
           </div>
           {(()=>{
             let component;
+            console.log(this.state.page);
             if(this.state.page === "downloader"){
               component = <YoutubeDownload/>;
             }else{

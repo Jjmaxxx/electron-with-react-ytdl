@@ -61,12 +61,9 @@ ipcMain.on("getFiles", async(event, folderName)=>{
     });
   })
   getFiles.then((data)=>{
-    //console.log(data);
     let sortFiles = new Promise(resolve=>{
       resolve(
         data.sort((a,b)=>{
-          console.log(a[2]);
-          console.log(b[2]);
           return(b[2] - a[2]);
         })
       )
@@ -80,7 +77,6 @@ ipcMain.on("getFiles", async(event, folderName)=>{
   // event.reply('gotFiles', files);
 })
 ipcMain.on('sent-link', async(event, arg)=>{
-  console.log(arg)
   let videoData = await ytdl.createReadableStream(arg);
   event.reply('vid-info', videoData);
 })
@@ -90,15 +86,15 @@ ipcMain.on('createFolder', (event, folderName)=>{
   win.webContents.send('newFolder');
 })
 ipcMain.on('download', async(event,args)=>{
-  console.log(args);
+  let done;
   if(args.fileType === "mp3"){
-    let done = await ytdl.audioOnly(args);
-    console.log(done);
+    done = await ytdl.audioOnly(args);
   }
   else{
-    let done = await ytdl.mergeVideoAudio(args);
-    console.log(done);
+    done = await ytdl.mergeVideoAudio(args);
   }
+  console.log('a')
+  //event.reply('')
 })
 // ipcMain.on('synchronous-message', (event, arg) => {
 //   console.log(arg) // prints "ping"

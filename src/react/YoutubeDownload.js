@@ -21,10 +21,10 @@ class YoutubeDownload extends React.Component{
         };
     }
     linkSubmit = (event) => {
-    event.preventDefault();
-    link=event.target[0].value;
-    ipcRenderer.send('sent-link', link);
-    ipcRenderer.on('vid-info', (event, vid) => {
+        event.preventDefault();
+        link=event.target[0].value;
+        ipcRenderer.send('sent-link', link);
+        ipcRenderer.on('vid-info', (event, vid) => {
             this.setState({fileName:vid.name});
             qualities = vid.qualityList;
             selections.set("quality", vid.qualityList[0].value);
@@ -41,7 +41,8 @@ class YoutubeDownload extends React.Component{
     getName=(event)=>{
         this.setState({fileName:event.target.value});
     }
-    download=()=>{
+    download=(event)=>{
+        event.preventDefault();
         ipcRenderer.send('download', {fileType:selections.get('mp3ormp4'), name: this.state.fileName, url: link, quality:selections.get('quality')});
         console.log(selections.get('quality'));
         console.log(selections.get('mp3ormp4'));
