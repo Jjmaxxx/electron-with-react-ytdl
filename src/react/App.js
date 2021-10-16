@@ -30,7 +30,9 @@ class App extends React.Component{
       fileType:"mp3",
       foldersList:["null"],
       page:"downloader",
-      file:""
+      fileIndex:null,
+      filesList:[],
+      selectedFile:""
     };
     //this.state = {variable:'some value'}
   }
@@ -61,8 +63,12 @@ class App extends React.Component{
   handleDownloadSelect=(event)=>{
     this.setState({page:"downloader"});
   }
-  handleFileSelect=(newFile)=>{
-    this.setState({file:newFile});
+  handleFileSelect=(data)=>{
+    this.setState({fileIndex:data[1]});
+    this.setState({filesList:data[0]});
+  }
+  handleNewSelectedFile=(data)=>{
+    this.setState({selectedFile:data});
   }
   render(){
     const classes = styles;
@@ -113,7 +119,7 @@ class App extends React.Component{
                 <p style = {classes.drawerTabs}>downloads</p>
               </div> */}
             </Drawer>
-            <Player key ={this.state.file} file={downloadFolder+this.state.page+"/"+this.state.file}/>
+            <Player key ={this.state.filesList} sendFileToParent = {this.handleNewSelectedFile} index = {this.state.fileIndex} filesList ={this.state.filesList} filePath={downloadFolder+this.state.page+"/"}/>
           </div>
           {(()=>{
             let component;
@@ -121,7 +127,7 @@ class App extends React.Component{
             if(this.state.page === "downloader"){
               component = <YoutubeDownload/>;
             }else{
-              component = <Playlist appHeight = {this.state.height} sendFileToParent = {this.handleFileSelect} key= {this.state.page} path={this.state.page}/>
+              component = <Playlist appHeight = {this.state.height} selectedFile = {this.state.selectedFile} sendFileToParent = {this.handleFileSelect} key= {this.state.page} path={this.state.page}/>
             }
             return(
               component

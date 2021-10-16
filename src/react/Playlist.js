@@ -18,7 +18,7 @@ class Playlist extends React.Component{
             playing:false,
             openFileOptionsMenu:false,
             anchorEl:null,
-            songListHeight:"0px"
+            songListHeight:"0px",
         }
     }
     componentDidMount(){
@@ -35,14 +35,21 @@ class Playlist extends React.Component{
         ipcRenderer.removeAllListeners("gotFiles");
     }
     static getDerivedStateFromProps(props,state){
-        return{
-            //return in here sets state
-            songListHeight:(props.appHeight - 357) + "px"
+        console.log('a');
+        if(props.selectedFile !== null){
+            return{
+                songListHeight:(props.appHeight - 357) + "px",
+                // selectedIndex:props.selectedFile
+            }
+        }else{
+            return{
+                songListHeight:(props.appHeight - 357) + "px",
+            }
         }
         //this.setState({songListHeight:props.appHeight + "px"});
     }
     handleFileClick = (event,file, index)=>{
-        this.props.sendFileToParent(file);
+        this.props.sendFileToParent([this.state.filesList,index]);
         this.setState({playing:true});
         this.setState({selectedIndex:index});
         console.log(this.state.selectedIndex);

@@ -25,20 +25,23 @@ class Player extends React.Component{
         super(props);
         this.play = this.play.bind(this);
         this.state = {
+            filesList:[],
             playing: false,
-            volume:0,
+            volume:0.1,
             videoTime:"0:00",
             rawVideoTime:0,
             duration:0,
             seeking:false,
             loop:false,
-            shuffle:false
+            shuffle:false,
+            data:"",
+            selected:"",
+            video:"",
+            vidIndex:""
         }
     }
     componentDidMount(){
-        video=this.props.file;    
-        fileType = video.substring(video.length-3);
-        vidTitle = video.substring(0,video.length-4).substring(video.lastIndexOf('/')+1);
+        this.getNewVideo(this.props.index);
         if(fileType === "mp4"){
             pipWidth = "250px";
             pipHeight = "120px";
@@ -48,8 +51,26 @@ class Player extends React.Component{
         }
         this.setState({playing:true});
     }
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        this.setState({data: nextProps.index},()=>{
+            this.getNewVideo(this.state.data);
+        });  
+    }
     ref = player => {
         this.player = player;
+    }
+    getNewVideo= (index)=>{
+        this.setState({vidIndex:index},()=>{
+            this.setState({filesList:this.props.filesList},()=>{
+                if(this.state.filesList.length > 0){
+                    //console.log(this.props.filePath + this.props.filesList[this.state.vidIndex][0]);
+                    this.setState({video:this.props.filePath + this.state.filesList[this.state.vidIndex][0]},()=>{
+                        fileType = this.state.video.substring(this.state.video.length-3);
+                        vidTitle = this.state.video.substring(0,this.state.video.length-4).substring(this.state.video.lastIndexOf('/')+1);
+                    });
+                }
+            })
+        });
     }
     playerReady= ()=>{
         console.log("ready");
@@ -79,7 +100,7 @@ class Player extends React.Component{
         }
     }
     videoProgress= (state)=>{
-        console.log(state);
+        console.log(state.playedSeconds);
         if(!this.state.seeking){
             state.playedSeconds = Math.trunc(state.playedSeconds);
             this.setState({rawVideoTime:state.playedSeconds});
@@ -90,9 +111,19 @@ class Player extends React.Component{
         this.setState({duration:vidDuration});
         // console.log("minutes: " + Math.floor(duration/60) + "seconds: " + Math.floor(((Math.floor(duration/60)-duration/60) * 60)*-1)); 
     }
+    videoEnded=()=>{
+        console.log('a');
+        let nextVideo = this.state.vidIndex+1;
+        this.setState({selected:nextVideo},()=>{
+            this.props.sendFileToParent(this.state.selected);
+        });
+        if(nextVideo < this.state.filesList.length){
+            this.getNewVideo(nextVideo);
+        }
+    }
     render(){
         const classes = styles;
-        const {playing, volume, rawVideoTime, videoTime, duration, loop, shuffle} = this.state;
+        const {video, playing, volume, rawVideoTime, videoTime, duration, loop, shuffle} = this.state;
         return(
             <div>
                 <MuiThemeProvider theme={playerTheme}>
@@ -110,6 +141,7 @@ class Player extends React.Component{
                         onReady={this.playerReady}
                         onProgress={this.videoProgress}
                         onDuration={this.videoDuration}
+                        onEnded={this.videoEnded}
                         style= {classes.video}
                     />
                     <Drawer 
