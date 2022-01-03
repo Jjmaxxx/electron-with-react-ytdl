@@ -18,7 +18,7 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import helperFunctions from './utils/helperFunctions.js';
 
 
-let video,fileType,vidTitle,pipWidth,pipHeight;
+let video,fileType,vidTitle,pipWidth,pipHeight, originalPlaylist;
 
 class Player extends React.Component{
     constructor(props){
@@ -26,6 +26,7 @@ class Player extends React.Component{
         this.play = this.play.bind(this);
         this.state = {
             filesList:[],
+            filePath:"",
             playing: false,
             volume:0.1,
             videoTime:"0:00",
@@ -33,15 +34,17 @@ class Player extends React.Component{
             duration:0,
             seeking:false,
             loop:false,
-            shuffle:false,
-            data:"",
+            shuffle: localStorage.getItem('shuffle') ? JSON.parse(localStorage.getItem('shuffle')) : false ,
             selected:"",
+            selectedVideo: false,
             video:"",
+            videoSelection:null,
             vidIndex:""
         }
     }
     componentDidMount(){
-        this.getNewVideo(this.props.index);
+        //this.getNewVideo(this.props.index);
+        console.log('remounted')
         if(fileType === "mp4"){
             pipWidth = "250px";
             pipHeight = "120px";
@@ -49,31 +52,61 @@ class Player extends React.Component{
             pipWidth = "0px";
             pipHeight = "0px";
         }
-        this.setState({playing:true});
+        this.setState({playing:true}); 
+        originalPlaylist = this.props.filesList;
+        this.setState({filesList:originalPlaylist});
+        this.setState({filePath:this.props.filePath});
     }
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        this.setState({data: nextProps.index},()=>{
-            this.getNewVideo(this.state.data);
-        });  
+    componentDidUpdate(prevProps, prevState){
+        //is not getting run immediately after selectedVideo becomes true
+        // console.log(prevProps.index);
+        // console.log(prevState);
+        if(this.state.selectedVideo === true){
+            this.setState({selectedVideo:false},()=>{
+                this.getNewVideo(this.state.videoSelection);
+            });
+        }
     }
+    static getDerivedStateFromProps(props,state){
+        if(props.index !== null && state.prevVideoSelection !== state.videoSelection){
+            // console.log("prev state:" + state.prevVideoSelection);
+            // console.log("state: " + state.videoSelection);
+            return{
+                videoSelection:props.index,   
+                prevVideoSelection: state.videoSelection, 
+                selectedVideo:true
+            }
+        }
+        return{
+            videoSelection:props.index,
+        }
+    }
+    // UNSAFE_componentWillReceiveProps(nextProps) {
+    //     this.setState({data: nextProps.index},()=>{
+    //         this.getNewVideo(this.state.data);
+    //     });  
+    // }
     ref = player => {
         this.player = player;
+        console.log(this.player);
     }
+    // this.setState({filesList:this.props.filesList});
+    // this.setState({video:this.props.filePath});
     getNewVideo= (index)=>{
         this.setState({vidIndex:index},()=>{
-            this.setState({filesList:this.props.filesList},()=>{
-                if(this.state.filesList.length > 0){
-                    //console.log(this.props.filePath + this.props.filesList[this.state.vidIndex][0]);
-                    this.setState({video:this.props.filePath + this.state.filesList[this.state.vidIndex][0]},()=>{
-                        fileType = this.state.video.substring(this.state.video.length-3);
-                        vidTitle = this.state.video.substring(0,this.state.video.length-4).substring(this.state.video.lastIndexOf('/')+1);
-                    });
-                }
-            })
+            if(this.state.filesList.length > 0){
+                this.setState({video:this.state.filePath + this.state.filesList[this.state.vidIndex][0]},()=>{
+                    fileType = this.state.video.substring(this.state.video.length-3);
+                    vidTitle = this.state.video.substring(0,this.state.video.length-4).substring(this.state.video.lastIndexOf('/')+1);
+                    //if this console.log is not instant when new file this will break fix it
+                    console.log(this.state.video);
+                    console.log(this.state.filesList);
+                });
+            }
         });
     }
     playerReady= ()=>{
-        console.log("ready");
+        console.log('run')
         if(video === null){
             console.log('no video found')
         }
@@ -85,12 +118,34 @@ class Player extends React.Component{
             this.setState({playing:true});
         }
     }
+    //https://bost.ocks.org/mike/shuffle/
     shuffle=()=>{
         if(this.state.shuffle){
             this.setState({shuffle:false});
+            this.setState({filesList:originalPlaylist});
+            //find index of current song, set it to that
         }else{
             this.setState({shuffle:true});
+            let list = this.state.filesList;
+            let i, unshuffled, temp;
+            unshuffled = list.length;
+            while(unshuffled){
+                unshuffled= unshuffled- 1;
+                i= Math.floor(Math.random()*unshuffled);
+                temp = list[unshuffled];
+                list[unshuffled] = list[i];
+                list[i] = temp;
+            }
+            temp = list[this.state.vidIndex]; 
+            list[this.state.vidIndex] = list[0];
+            list[0] = temp;
+            console.log(list);
+            this.setState({filesList:list},()=>{
+                console.log(this.state.filesList);
+            });
         }
+        window.localStorage.setItem('shuffle', JSON.stringify(true));
+        console.log(JSON.parse(localStorage.getItem('shuffle')));
     }
     loop=()=>{
         if(!this.state.loop){
@@ -100,7 +155,7 @@ class Player extends React.Component{
         }
     }
     videoProgress= (state)=>{
-        console.log(state.playedSeconds);
+        // console.log(state.playedSeconds);
         if(!this.state.seeking){
             state.playedSeconds = Math.trunc(state.playedSeconds);
             this.setState({rawVideoTime:state.playedSeconds});
@@ -112,7 +167,6 @@ class Player extends React.Component{
         // console.log("minutes: " + Math.floor(duration/60) + "seconds: " + Math.floor(((Math.floor(duration/60)-duration/60) * 60)*-1)); 
     }
     videoEnded=()=>{
-        console.log('a');
         let nextVideo = this.state.vidIndex+1;
         this.setState({selected:nextVideo},()=>{
             this.props.sendFileToParent(this.state.selected);
@@ -124,6 +178,7 @@ class Player extends React.Component{
     render(){
         const classes = styles;
         const {video, playing, volume, rawVideoTime, videoTime, duration, loop, shuffle} = this.state;
+        //console.log("render running")
         return(
             <div>
                 <MuiThemeProvider theme={playerTheme}>

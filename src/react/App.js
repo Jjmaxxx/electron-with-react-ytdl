@@ -119,11 +119,11 @@ class App extends React.Component{
                 <p style = {classes.drawerTabs}>downloads</p>
               </div> */}
             </Drawer>
-            <Player key ={this.state.filesList} sendFileToParent = {this.handleNewSelectedFile} index = {this.state.fileIndex} filesList ={this.state.filesList} filePath={downloadFolder+this.state.page+"/"}/>
+            <Player key = {this.state.filesList} sendFileToParent = {this.handleNewSelectedFile} index = {this.state.fileIndex} filesList ={this.state.filesList} filePath={downloadFolder+this.state.page+"/"}/>
           </div>
           {(()=>{
             let component;
-            console.log(this.state.page);
+            // console.log(this.state.page);
             if(this.state.page === "downloader"){
               component = <YoutubeDownload/>;
             }else{

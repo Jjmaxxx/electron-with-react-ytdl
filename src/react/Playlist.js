@@ -25,7 +25,7 @@ class Playlist extends React.Component{
         ipcRenderer.send("getFiles",this.props.path);
         ipcRenderer.on('gotFiles',(event,files)=>{
             this.setState({filesList:files},()=>{
-                console.log(this.state.filesList);
+                // console.log(this.state.filesList);
             });
             this.setState({loading:false});
         })
@@ -35,7 +35,6 @@ class Playlist extends React.Component{
         ipcRenderer.removeAllListeners("gotFiles");
     }
     static getDerivedStateFromProps(props,state){
-        console.log('a');
         if(props.selectedFile !== null){
             return{
                 songListHeight:(props.appHeight - 357) + "px",
