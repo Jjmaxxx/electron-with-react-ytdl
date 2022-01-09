@@ -69,6 +69,7 @@ ipcMain.on("getFiles", async(event, folderName)=>{
       )
     })
     sortFiles.then((data)=>{
+      console.log(data);
       event.reply('gotFiles', data);
     })
     //console.log(data);

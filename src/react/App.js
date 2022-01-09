@@ -128,6 +128,7 @@ class App extends React.Component{
               component = <YoutubeDownload/>;
             }else{
               component = <Playlist appHeight = {this.state.height} selectedFile = {this.state.selectedFile} sendFileToParent = {this.handleFileSelect} key= {this.state.page} path={this.state.page}/>
+              console.log(this.state.filesList)
             }
             return(
               component

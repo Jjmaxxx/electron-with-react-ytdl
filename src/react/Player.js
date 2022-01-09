@@ -25,7 +25,7 @@ class Player extends React.Component{
         super(props);
         this.play = this.play.bind(this);
         this.state = {
-            filesList:[],
+            playlist:[],
             filePath:"",
             playing: false,
             volume:0.1,
@@ -53,8 +53,10 @@ class Player extends React.Component{
             pipHeight = "0px";
         }
         this.setState({playing:true}); 
+        //console.log(this.props.filesList)
         originalPlaylist = this.props.filesList;
-        this.setState({filesList:originalPlaylist});
+        console.log(originalPlaylist);
+        this.setState({playlist:originalPlaylist});
         this.setState({filePath:this.props.filePath});
     }
     componentDidUpdate(prevProps, prevState){
@@ -63,7 +65,8 @@ class Player extends React.Component{
         // console.log(prevState);
         if(this.state.selectedVideo === true){
             this.setState({selectedVideo:false},()=>{
-                this.getNewVideo(this.state.videoSelection);
+                this.setState({playlist:originalPlaylist}, this.getNewVideo(this.state.videoSelection));
+                this.setState({shuffle:false})
             });
         }
     }
@@ -88,19 +91,19 @@ class Player extends React.Component{
     // }
     ref = player => {
         this.player = player;
-        console.log(this.player);
+        //console.log(this.player);
     }
     // this.setState({filesList:this.props.filesList});
     // this.setState({video:this.props.filePath});
     getNewVideo= (index)=>{
         this.setState({vidIndex:index},()=>{
-            if(this.state.filesList.length > 0){
-                this.setState({video:this.state.filePath + this.state.filesList[this.state.vidIndex][0]},()=>{
+            if(this.state.playlist.length > 0){
+                this.setState({video:this.state.filePath + this.state.playlist[this.state.vidIndex][0]},()=>{
                     fileType = this.state.video.substring(this.state.video.length-3);
                     vidTitle = this.state.video.substring(0,this.state.video.length-4).substring(this.state.video.lastIndexOf('/')+1);
                     //if this console.log is not instant when new file this will break fix it
-                    console.log(this.state.video);
-                    console.log(this.state.filesList);
+                    // console.log(this.state.video);
+                    // console.log(this.state.playlist);
                 });
             }
         });
@@ -118,34 +121,54 @@ class Player extends React.Component{
             this.setState({playing:true});
         }
     }
+    rewind=()=>{
+        let goToPrevVid = this.state.vidIndex-1;
+        if(Math.trunc(this.player.getCurrentTime()) < 5 && goToPrevVid >= 0){
+            this.getNewVideo(goToPrevVid);
+        }else{
+            this.player.seekTo(0);
+        }
+    }
     //https://bost.ocks.org/mike/shuffle/
+    shufflePlaylist=()=>{
+        let songsList = Array.from(originalPlaylist);
+        //console.log(songsList);
+        let currSong = songsList[this.state.vidIndex];
+        let i, unshuffled, temp;
+        unshuffled = songsList.length;
+        while(unshuffled){
+            unshuffled= unshuffled- 1;
+            i= Math.floor(Math.random()*unshuffled);
+            temp = songsList[unshuffled];
+            songsList[unshuffled] = songsList[i];
+            songsList[i] = temp;
+            //console.log(songsList);
+           // console.log(this.state.playlist);
+        }
+        songsList.splice(songsList.findIndex((element)=> element === currSong), 1);
+        songsList.splice(0,0, currSong);
+        //console.log(songsList);
+        this.setState({vidIndex:0});
+        this.setState({playlist:songsList},()=>{
+            //console.log(this.state.filesList);
+        });
+    }
     shuffle=()=>{
+        //console.log(originalPlaylist);
         if(this.state.shuffle){
             this.setState({shuffle:false});
-            this.setState({filesList:originalPlaylist});
+            this.setState({playlist:originalPlaylist},()=>{
+                console.log(this.state.playlist)
+            });
+            window.localStorage.setItem('shuffle', JSON.stringify(false));
             //find index of current song, set it to that
         }else{
             this.setState({shuffle:true});
-            let list = this.state.filesList;
-            let i, unshuffled, temp;
-            unshuffled = list.length;
-            while(unshuffled){
-                unshuffled= unshuffled- 1;
-                i= Math.floor(Math.random()*unshuffled);
-                temp = list[unshuffled];
-                list[unshuffled] = list[i];
-                list[i] = temp;
-            }
-            temp = list[this.state.vidIndex]; 
-            list[this.state.vidIndex] = list[0];
-            list[0] = temp;
-            console.log(list);
-            this.setState({filesList:list},()=>{
-                console.log(this.state.filesList);
-            });
+            //console.log(this.state.playlist);
+            this.shufflePlaylist();
+            window.localStorage.setItem('shuffle', JSON.stringify(true));
         }
-        window.localStorage.setItem('shuffle', JSON.stringify(true));
-        console.log(JSON.parse(localStorage.getItem('shuffle')));
+        //console.log(JSON.parse(localStorage.getItem('shuffle')));
     }
     loop=()=>{
         if(!this.state.loop){
@@ -160,19 +183,20 @@ class Player extends React.Component{
             state.playedSeconds = Math.trunc(state.playedSeconds);
             this.setState({rawVideoTime:state.playedSeconds});
             this.setState({videoTime:helperFunctions.getFancyTime(state.playedSeconds)});
+            //console.log(this.player.getCurrentTime());
         }  
     }
     videoDuration=(vidDuration)=>{
         this.setState({duration:vidDuration});
         // console.log("minutes: " + Math.floor(duration/60) + "seconds: " + Math.floor(((Math.floor(duration/60)-duration/60) * 60)*-1)); 
     }
-    videoEnded=()=>{
-        let nextVideo = this.state.vidIndex+1;
-        this.setState({selected:nextVideo},()=>{
-            this.props.sendFileToParent(this.state.selected);
-        });
-        if(nextVideo < this.state.filesList.length){
-            this.getNewVideo(nextVideo);
+    nextVideo=()=>{
+        let nextVid = this.state.vidIndex+1;
+        // this.setState({selected:nextVideo},()=>{
+        //     this.props.sendFileToParent(this.state.selected);
+        // });
+        if(nextVid < this.state.playlist.length){
+            this.getNewVideo(nextVid);
         }
     }
     render(){
@@ -196,7 +220,7 @@ class Player extends React.Component{
                         onReady={this.playerReady}
                         onProgress={this.videoProgress}
                         onDuration={this.videoDuration}
-                        onEnded={this.videoEnded}
+                        onEnded={this.nextVideo}
                         style= {classes.video}
                     />
                     <Drawer 
@@ -244,7 +268,7 @@ class Player extends React.Component{
                                             }
                                         })()}
                                     </IconButton>
-                                    <IconButton color = "secondary">
+                                    <IconButton onClick = {this.rewind} color = "secondary">
                                         <FastRewindIcon fontSize="large"/>
                                     </IconButton>
                                     <IconButton onClick={this.play} style={classes.playPauseButton} color = "secondary" >
@@ -265,7 +289,7 @@ class Player extends React.Component{
                                             }
                                         })()}
                                     </IconButton>
-                                    <IconButton color = "secondary">
+                                    <IconButton onClick = {this.nextVideo} color = "secondary">
                                         <FastForwardIcon fontSize="large"/>
                                     </IconButton>
                                     <IconButton style={classes.playerIcons} onClick={this.loop} color = "secondary">

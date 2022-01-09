@@ -6,13 +6,12 @@ import FolderIcon from '@material-ui/icons/Folder';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-
 const { ipcRenderer } = window.require("electron");
 class Playlist extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            filesList:[],
+            playlist:[],
             loading:true,
             selectedIndex:null,
             playing:false,
@@ -24,8 +23,8 @@ class Playlist extends React.Component{
     componentDidMount(){
         ipcRenderer.send("getFiles",this.props.path);
         ipcRenderer.on('gotFiles',(event,files)=>{
-            this.setState({filesList:files},()=>{
-                // console.log(this.state.filesList);
+            this.setState({playlist:files},()=>{
+                console.log(this.state.playlist);
             });
             this.setState({loading:false});
         })
@@ -48,7 +47,8 @@ class Playlist extends React.Component{
         //this.setState({songListHeight:props.appHeight + "px"});
     }
     handleFileClick = (event,file, index)=>{
-        this.props.sendFileToParent([this.state.filesList,index]);
+        console.log(this.state.playlist);
+        this.props.sendFileToParent([this.state.playlist,index]);
         this.setState({playing:true});
         this.setState({selectedIndex:index});
         console.log(this.state.selectedIndex);
@@ -89,7 +89,7 @@ class Playlist extends React.Component{
                 </div>
               )}
               <List style = {{display:'flex',flexDirection:"column", padding:"0", height: songListHeight,overflow: "auto"}}>
-                  {this.state.filesList.map((data,index) => (
+                  {this.state.playlist.map((data,index) => (
                     <div style ={{display:"flex", width:"100%", backgroundColor:"#0d1217"}}>
                         <ListItem 
                             style={{width:"100%",paddingRight:0}} 
