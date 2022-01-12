@@ -19,6 +19,7 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import helperFunctions from './utils/helperFunctions.js';
 import QueueMusicIcon from '@material-ui/icons/QueueMusic';
 import PictureInPictureIcon from '@material-ui/icons/PictureInPicture';
+import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
 
 let video,fileType,vidTitle,pipWidth,pipHeight, originalPlaylist;
 
@@ -96,6 +97,7 @@ class Player extends React.Component{
     // this.setState({filesList:this.props.filesList});
     // this.setState({video:this.props.filePath});
     getNewVideo= (index)=>{
+        this.setState({pip:false});
         this.setState({vidIndex:index},()=>{
             if(this.state.playlist.length > 0){
                 this.setState({video:this.state.filePath + this.state.playlist[this.state.vidIndex][0]},()=>{
@@ -176,6 +178,8 @@ class Player extends React.Component{
     pip=()=>{
         if(!this.state.pip){
             this.setState({pip:true});
+        }else{
+            this.setState({pip:false});
         }
     }
     pipDisable=()=>{
@@ -257,7 +261,12 @@ class Player extends React.Component{
                             onEnded={this.nextVideo}
                         />        
                         <IconButton disabled = {hoverPlayer} style={classes.overlapPIPVideo} onClick = {this.pip} color="secondary">
-                            <PictureInPictureIcon/>
+                            {
+                                pip===true ?
+                                    <PictureInPictureAltIcon/>
+                                :
+                                    <PictureInPictureIcon/>
+                            }
                         </IconButton>  
                     </div>                      
 
@@ -269,83 +278,50 @@ class Player extends React.Component{
                         <div style={classes.playerBarContainer}>
                             <div style={classes.vidInfoContainer}>
                                 <div style={classes.vidImageContainer}>
-                                    {(()=>{
-                                        if(fileType === "mp3"){
-                                            return(
-                                                <div>
-                                                    <MusicNoteIcon style={classes.vidImage} fontSize="large"/>
-                                                </div>
-                                            )
-                                        }else{
-                                            return(
-                                                <div>
-                                                    <MovieIcon style={classes.vidImage} fontSize="large"/>
-                                                </div>
-                                            )
-                                        }
-                                    })()}
+                                    {
+                                        fileType === "mp3" ?
+                                        <div>
+                                            <MusicNoteIcon style={classes.vidImage} fontSize="large"/>
+                                        </div>
+                                        :
+                                        <div>
+                                            <MovieIcon style={classes.vidImage} fontSize="large"/>
+                                        </div>
+                                    }
                                 </div>
                                 {/* 15 characters limit */}
                                 <div style={{color:"#00adb5", marginLeft:"10px"}}>{vidTitle}<br/><div style={{color:"#00adb5"}}>Unknown Artist</div></div>
                             </div>
                                 <div style = {classes.playPauseIconContainer}>
                                     <IconButton style={classes.playerIcons} onClick={this.shuffle}color = "secondary">
-                                        {(()=>{
-                                            if(!shuffle){
-                                                return(
-                                                    <div>
-                                                        <ShuffleIcon/>
-                                                    </div>
-                                                )
-                                            }else{
-                                                return(
-                                                    <div>
-                                                        <ShuffleIcon style={classes.iconClicked}/>
-                                                    </div>
-                                                )
-                                            }
-                                        })()}
+                                        {
+                                            !shuffle ? 
+                                                <ShuffleIcon/>
+                                            :
+                                                <ShuffleIcon style={classes.iconClicked}/>
+                                        }
                                     </IconButton>
                                     <IconButton onClick = {this.rewind} color = "secondary">
                                         <FastRewindIcon fontSize="large"/>
                                     </IconButton>
                                     <IconButton onClick={this.play} style={classes.playPauseButton} color = "secondary" >
-                                        {(()=>{
-                                            if(playing){
-                                                return(
-                                                    <div>
-                                                        <PauseIcon style={classes.playPauseIcon} fontSize="large"/>
-                                                    </div>
-                                                )
-                                            }else{
-                                                // this.player.seekTo(70,'seconds')
-                                                return(
-                                                    <div>
-                                                        <PlayArrowIcon style={classes.playPauseIcon}  fontSize="large"/>
-                                                    </div>
-                                                )
-                                            }
-                                        })()}
+                                        {
+                                            playing ?
+                                                <PauseIcon style={classes.playPauseIcon} fontSize="large"/>
+                                            :
+                                                <PlayArrowIcon style={classes.playPauseIcon}  fontSize="large"/>
+                                        }
                                     </IconButton>
                                     <IconButton onClick = {this.nextVideo} color = "secondary">
                                         <FastForwardIcon fontSize="large"/>
                                     </IconButton>
                                     <IconButton style={classes.playerIcons} onClick={this.loop} color = "secondary">
-                                        {(()=>{
-                                            if(!loop){
-                                                return(
-                                                    <div>
-                                                        <LoopIcon/>
-                                                    </div>
-                                                )
-                                            }else{
-                                                return(
-                                                    <div>
-                                                        <LoopIcon style={classes.iconClicked}/>
-                                                    </div>
-                                                )
-                                            }
-                                        })()}
+                                        {
+                                            !loop ? 
+                                                <LoopIcon/>
+                                            :
+                                                <LoopIcon style={classes.iconClicked}/>
+                                        }
                                     </IconButton>
                                 </div>
                                 <IconButton style={{marginBottom:"8px"}} onClick={this.queue} color = "secondary">
