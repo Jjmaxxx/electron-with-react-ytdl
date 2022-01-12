@@ -59,7 +59,9 @@ ipcMain.on("getFiles", async(event, folderName)=>{
         }
       }); 
     });
-  })
+  }).catch((error) => {
+    console.error(error);
+  });
   getFiles.then((data)=>{
     let sortFiles = new Promise(resolve=>{
       resolve(
@@ -67,7 +69,9 @@ ipcMain.on("getFiles", async(event, folderName)=>{
           return(b[2] - a[2]);
         })
       )
-    })
+    }).catch((error) => {
+      console.error(error);
+    });
     sortFiles.then((data)=>{
       console.log(data);
       event.reply('gotFiles', data);

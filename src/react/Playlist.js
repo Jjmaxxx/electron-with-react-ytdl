@@ -98,7 +98,7 @@ class Playlist extends React.Component{
                             button 
                             key={index}
                         >
-                        <div style= {{marginLeft:"200px",display:"flex",width:"100%"}}>
+                        <div style= {{marginLeft:"200px",display:"flex",width:"70%",position:"absolute"}}>
                             <ListItemIcon style={{marginTop:"3px"}}>
                                 {
                                     selectedIndex === index ? 
@@ -113,12 +113,10 @@ class Playlist extends React.Component{
                                 primary={data[0].substring(0,data[0].length-4)}
                             />
 
-                            <div style={{display:"flex", justifyContent:"flex-end",width:"100%", padding:0}}>
-                                <p>{helperFunctions.getFancyTime(Math.trunc(data[1]))}</p>
-                            </div>
                         </div>
                         </ListItem>
                         <div style={{display:"flex",alignItems:"flex-end", marginBottom:"8px"}}>
+                        <p style={{color:"#007d85"}}>{helperFunctions.getFancyTime(Math.trunc(data[1]))}</p>
                         <IconButton onClick={this.moreFileOptionsButton}>
                             <MoreHorizIcon color="primary"/>
                             {
