@@ -120,18 +120,18 @@ class Playlist extends React.Component{
                         </ListItem>
                         <div style={{display:"flex",alignItems:"flex-end", marginBottom:"8px"}}>
                         <IconButton onClick={this.moreFileOptionsButton}>
-                        <MoreHorizIcon color="primary"/>
-                        {
-                            (openFileOptionsMenu ) && 
-                            <Menu
-                            open={openFileOptionsMenu}
-                            anchorEl={anchorEl}
-                            color="primary"
-                            >
-                                <MenuItem>Add to Queue</MenuItem>
-                                <MenuItem>Delete</MenuItem>
-                            </Menu>
-                        }
+                            <MoreHorizIcon color="primary"/>
+                            {
+                                (openFileOptionsMenu ) && 
+                                <Menu
+                                open={openFileOptionsMenu}
+                                anchorEl={anchorEl}
+                                color="primary"
+                                >
+                                    <MenuItem>Add to Queue</MenuItem>
+                                    <MenuItem>Delete</MenuItem>
+                                </Menu>
+                            }
                         </IconButton>
                     </div>
                     </div>

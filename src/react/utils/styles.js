@@ -99,6 +99,13 @@ const styles = {
       position: 'fixed',
       zIndex:1,
     },
+    overlapPIPVideo:{
+      position:"absolute",
+      zIndex:2,
+      bottom:'35px',
+      left:'20px',
+      backgroundColor:'rgba(0,0,0,0.6)',
+    },
     vidImage:{
       color:"#000000",
       marginTop:"3px"

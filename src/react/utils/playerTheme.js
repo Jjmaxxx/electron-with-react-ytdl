@@ -12,11 +12,28 @@ const playerTheme = createTheme({
           backgroundColor: "#000000"
         }
       }, 
+      MuiDialog:{
+        root:{
+          backgroundColor:"#00adb5",
+        },
+        BackdropProps:{
+          backgroundColor:"#00adb5",
+        },
+        PaperProps:{
+          backgroundColor:"#00adb5",
+        }
+      },
       MuiCssBaseline: {
         '@global': {
           '*': {
             'scrollbar-width': 'thin',
           },
+          // '& .MuiDialogContent-root': {
+          //   backgroundColor:"#00adb5"
+          // },
+          // '& .MuiDialogActions-root': {
+          //   backgroundColor:"#00adb5"
+          // },
           '*::-webkit-scrollbar': {
             width: '10px',
             height: '10px',

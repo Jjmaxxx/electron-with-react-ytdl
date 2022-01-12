@@ -1,7 +1,7 @@
 import React from "react";
 import ReactPlayer from 'react-player/file';
 import styles from './utils/styles.js';
-import { Drawer , IconButton, Slider, Grid} from "@material-ui/core";
+import { Drawer , IconButton, Slider, Grid, Dialog} from "@material-ui/core";
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
@@ -11,12 +11,14 @@ import VolumeUp from '@material-ui/icons/VolumeUp';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import MovieIcon from '@material-ui/icons/Movie';
 import ShuffleIcon from '@material-ui/icons/Shuffle';
+import CloseIcon from '@material-ui/icons/Close';
 import LoopIcon from '@material-ui/icons/Loop';
 import playerTheme from './utils/playerTheme.js';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import helperFunctions from './utils/helperFunctions.js';
-
+import QueueMusicIcon from '@material-ui/icons/QueueMusic';
+import PictureInPictureIcon from '@material-ui/icons/PictureInPicture';
 
 let video,fileType,vidTitle,pipWidth,pipHeight, originalPlaylist;
 
@@ -27,6 +29,7 @@ class Player extends React.Component{
         this.state = {
             playlist:[],
             filePath:"",
+            hoverPlayer:true,
             playing: false,
             volume:0.1,
             videoTime:"0:00",
@@ -34,6 +37,8 @@ class Player extends React.Component{
             duration:0,
             seeking:false,
             loop:false,
+            pip:false,
+            openQueue:false,
             shuffle: localStorage.getItem('shuffle') ? JSON.parse(localStorage.getItem('shuffle')) : false ,
             selected:"",
             selectedVideo: false,
@@ -45,19 +50,14 @@ class Player extends React.Component{
     componentDidMount(){
         //this.getNewVideo(this.props.index);
         console.log('remounted')
-        if(fileType === "mp4"){
-            pipWidth = "250px";
-            pipHeight = "120px";
-        }else{
-            pipWidth = "0px";
-            pipHeight = "0px";
-        }
         this.setState({playing:true}); 
         //console.log(this.props.filesList)
         originalPlaylist = this.props.filesList;
-        console.log(originalPlaylist);
+        // console.log(originalPlaylist);
         this.setState({playlist:originalPlaylist});
         this.setState({filePath:this.props.filePath});
+        pipWidth ="0px";
+        pipHeight="0px";
     }
     componentDidUpdate(prevProps, prevState){
         //is not getting run immediately after selectedVideo becomes true
@@ -91,6 +91,11 @@ class Player extends React.Component{
     // }
     ref = player => {
         this.player = player;
+        if(this.player != null){
+            console.log(this.player.player);
+        }
+        // console.log(this.player.getActivePlayer());
+        //this.player.requestPictureInPicture();
         //console.log(this.player);
     }
     // this.setState({filesList:this.props.filesList});
@@ -101,12 +106,32 @@ class Player extends React.Component{
                 this.setState({video:this.state.filePath + this.state.playlist[this.state.vidIndex][0]},()=>{
                     fileType = this.state.video.substring(this.state.video.length-3);
                     vidTitle = this.state.video.substring(0,this.state.video.length-4).substring(this.state.video.lastIndexOf('/')+1);
+                    console.log(fileType);
+                    if(fileType === "mp4"){
+                        pipWidth = "250px";
+                        pipHeight = "120px";
+                    }else{
+                        pipWidth = "0px";
+                        pipHeight = "0px";
+                    }
                     //if this console.log is not instant when new file this will break fix it
                     // console.log(this.state.video);
                     // console.log(this.state.playlist);
                 });
             }
         });
+    }
+    hoverOverPlayer=()=>{
+        this.setState({hoverPlayer:false});
+    }
+    hoverOutPlayer=()=>{
+        this.setState({hoverPlayer:true});
+    }
+    queue=()=>{
+        this.setState({openQueue:true});
+    }
+    closeQueue=()=>{
+        this.setState({openQueue:false})
     }
     playerReady= ()=>{
         console.log('run')
@@ -153,12 +178,19 @@ class Player extends React.Component{
             //console.log(this.state.filesList);
         });
     }
+    pip=()=>{
+        if(!this.state.pip){
+            this.setState({pip:true});
+        }else{
+            this.setState({pip:false});
+        }
+    }
     shuffle=()=>{
         //console.log(originalPlaylist);
         if(this.state.shuffle){
             this.setState({shuffle:false});
             this.setState({playlist:originalPlaylist},()=>{
-                console.log(this.state.playlist)
+                // console.log(this.state.playlist)
             });
             window.localStorage.setItem('shuffle', JSON.stringify(false));
             //find index of current song, set it to that
@@ -168,8 +200,10 @@ class Player extends React.Component{
             this.shufflePlaylist();
             window.localStorage.setItem('shuffle', JSON.stringify(true));
         }
+        console.log(this.state.playlist);
         //console.log(JSON.parse(localStorage.getItem('shuffle')));
     }
+
     loop=()=>{
         if(!this.state.loop){
             this.setState({loop:true});
@@ -201,28 +235,35 @@ class Player extends React.Component{
     }
     render(){
         const classes = styles;
-        const {video, playing, volume, rawVideoTime, videoTime, duration, loop, shuffle} = this.state;
+        const {video, playing, volume, rawVideoTime, videoTime, duration, loop, shuffle, openQueue, pip, hoverPlayer} = this.state;
         //console.log("render running")
         return(
             <div>
                 <MuiThemeProvider theme={playerTheme}>
                     <CssBaseline/>
-                    <ReactPlayer 
-                        ref={this.ref}
-                        url = {video}
-                        key= {video}
-                        playing={playing}
-                        volume={volume}
-                        loop={loop}
-                        pip={true}
-                        width= {pipWidth}
-                        height= {pipHeight}
-                        onReady={this.playerReady}
-                        onProgress={this.videoProgress}
-                        onDuration={this.videoDuration}
-                        onEnded={this.nextVideo}
-                        style= {classes.video}
-                    />
+                    <div style= {classes.video} onMouseOver={this.hoverOverPlayer} onMouseOut={this.hoverOutPlayer}>
+                        <ReactPlayer 
+                            config={{file:{attributes:{autopictureinpicture:true}}}}
+                            onContextMenu={e=>e.preventDefault()}
+                            ref={this.ref}
+                            url = {video}
+                            key= {video}
+                            playing={playing}
+                            volume={volume}
+                            loop={loop}
+                            pip={pip}
+                            width= {pipWidth}
+                            height= {pipHeight}
+                            onReady={this.playerReady}
+                            onProgress={this.videoProgress}
+                            onDuration={this.videoDuration}
+                            onEnded={this.nextVideo}
+                        />        
+                        <IconButton disabled = {hoverPlayer} style={classes.overlapPIPVideo} onClick = {this.pip} color="secondary">
+                            <PictureInPictureIcon/>
+                        </IconButton>  
+                    </div>                      
+
                     <Drawer 
                         variant = "permanent" 
                         anchor="bottom"
@@ -310,6 +351,23 @@ class Player extends React.Component{
                                         })()}
                                     </IconButton>
                                 </div>
+                                <IconButton style={{marginBottom:"8px"}} onClick={this.queue} color = "secondary">
+                                    <QueueMusicIcon/>
+                                </IconButton>
+                                <Dialog
+                                    fullScreen
+                                    open={openQueue}
+                                    onClose={this.closeQueue}
+                                    color="inherit"
+                                >
+                                    <IconButton
+                                        edge="start"
+                                        color="inherit"
+                                        onClick={this.closeQueue}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Dialog>
                                     <Grid style={classes.volumeBar} container spacing={2} >
                                         <Grid item>
                                             <VolumeDown color = "secondary"/>
