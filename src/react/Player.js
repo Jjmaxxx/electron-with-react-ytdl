@@ -290,7 +290,7 @@ class Player extends React.Component{
                                     }
                                 </div>
                                 {/* 15 characters limit */}
-                                <div style={{color:"#00adb5", marginLeft:"10px"}}>{vidTitle}<br/><div style={{color:"#00adb5"}}>Unknown Artist</div></div>
+                                <div style={{color:"#00adb5", marginLeft:"10px", overflow:"hidden",textOverflow: "ellipsis"}}>{vidTitle}<br/><div style={{color:"#00adb5"}}>Unknown Artist</div></div>
                             </div>
                                 <div style = {classes.playPauseIconContainer}>
                                     <IconButton style={classes.playerIcons} onClick={this.shuffle}color = "secondary">

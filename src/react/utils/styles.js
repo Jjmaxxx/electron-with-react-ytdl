@@ -140,7 +140,8 @@ const styles = {
     playlistImage:{
       width:"110px", 
       height:"110px",
-      backgroundColor:"#00adb5"
+      backgroundColor:"#00adb5",
+      marginRight:"20px"
     },
     playlistTitleContainer:{
       display:"flex", 

@@ -1,10 +1,13 @@
 import React from "react";
 import styles from './utils/styles.js';
 import { Button, TextField } from "@material-ui/core";
+import Alert from '@material-ui/lab/Alert';
 import helperFunctions from './utils/helperFunctions.js';
 
 const { ipcRenderer } = window.require("electron");
 let qualities,link;
+let restrictedFileSymbols = ['<','>',':','/',"\"",'\\','|','?','*'];
+let restrictedFileNames = ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"]
 let selections = new Map();
 
 class YoutubeDownload extends React.Component{
@@ -18,19 +21,8 @@ class YoutubeDownload extends React.Component{
             linkSubmitted:false, 
             fileName:"", 
             fileType:"mp3",
+            titleError:"false"
         };
-    }
-    linkSubmit = (event) => {
-        event.preventDefault();
-        link=event.target[0].value;
-        ipcRenderer.send('sent-link', link);
-        ipcRenderer.on('vid-info', (event, vid) => {
-            this.setState({fileName:vid.name});
-            qualities = vid.qualityList;
-            selections.set("quality", vid.qualityList[0].value);
-            selections.set("mp3ormp4", "mp3");
-            this.setState({linkSubmitted:true});
-        })
     }
     changeOption= (event,args)=>{
         selections.set(args,event.target.value);
@@ -38,14 +30,61 @@ class YoutubeDownload extends React.Component{
             this.setState({fileType:event.target.value});
         }
     }
+    download=(event)=>{
+        event.preventDefault();
+        if(!this.detectRestrictedTitles(this.state.fileName)){
+            console.log('Something is wrong with title');
+            this.setState({titleError:true});
+        }else{
+            ipcRenderer.send('download', {fileType:selections.get('mp3ormp4'), name: this.state.fileName, url: link, quality:selections.get('quality')});
+            console.log(selections.get('quality'));
+            console.log(selections.get('mp3ormp4'));
+        }
+    }
     getName=(event)=>{
         this.setState({fileName:event.target.value});
     }
-    download=(event)=>{
+    linkSubmit = (event) => {
         event.preventDefault();
-        ipcRenderer.send('download', {fileType:selections.get('mp3ormp4'), name: this.state.fileName, url: link, quality:selections.get('quality')});
-        console.log(selections.get('quality'));
-        console.log(selections.get('mp3ormp4'));
+        this.setState({titleError:"false"});
+        link=event.target[0].value;
+        ipcRenderer.send('sent-link', link);
+        ipcRenderer.on('vid-info', (event, vid) => {
+            this.changeRestrictedTitles(vid.name);
+            //this.setState({fileName:vid.name});
+            qualities = vid.qualityList;
+            selections.set("quality", vid.qualityList[0].value);
+            selections.set("mp3ormp4", "mp3");
+            this.setState({linkSubmitted:true});
+        })
+    }
+    changeRestrictedTitles=(vidTitle)=>{
+        let newTitle = "";
+        let min = 0;
+        for(let i=0; i<vidTitle.length;i++){
+            while(restrictedFileSymbols.includes(vidTitle[min])){
+              min++;
+              i=min;
+            }
+            if (restrictedFileSymbols.includes(vidTitle[i])){
+                newTitle+= vidTitle.slice(min,i);
+                min=i+=1;
+            }else if(i+1 === vidTitle.length){
+                newTitle+= vidTitle.slice(min,i+1);
+            }
+        }
+        this.setState({fileName:newTitle});
+    }
+    detectRestrictedTitles=(vidTitle)=>{
+        for(let i=0; i<vidTitle.length;i++){
+            if(restrictedFileSymbols.includes(vidTitle[i])){
+                return false;
+            };
+        }
+        if(restrictedFileNames.includes(vidTitle)){
+            return false;
+        }
+        return true;
     }
     render(){
         const classes = styles;
@@ -75,7 +114,16 @@ class YoutubeDownload extends React.Component{
                                     style={{top:"10px", width: `${(8*this.state.fileName.length)+20}px`}}
                                     onChange = {this.getName}
                                 />
-                                <div/>
+                                {
+                                    this.state.titleError === true ?
+                                        <div style= {{display:"flex",justifyContent:"center", alignItems:"center",flexDirection:"column"}}>
+                                            <Alert color="primary" severity="error" style={{color:"red", textAlign:'center'}}>There's an error with the title, fix it!</Alert>
+                                            {/* //'<','>',':','/',"\"",'\\','|','?','*' */}
+                                            <div style={{color:"red"}}>Symbols(&lt;, &gt;, :, /, ", \, |, ?, *) are not allowed. Other special names are also not allowed (e.g. CON)</div>
+                                        </div>
+                                    :
+                                        <div/>
+                                }     
                                 <div style={classes.contentCenter}>
                                     <TextField
                                     label="FileType"
