@@ -84,11 +84,6 @@ class Player extends React.Component{
             videoSelection:props.index,
         }
     }
-    // UNSAFE_componentWillReceiveProps(nextProps) {
-    //     this.setState({data: nextProps.index},()=>{
-    //         this.getNewVideo(this.state.data);
-    //     });  
-    // }
     ref = player => {
         this.player = player;
         if(this.player != null){
@@ -181,9 +176,10 @@ class Player extends React.Component{
     pip=()=>{
         if(!this.state.pip){
             this.setState({pip:true});
-        }else{
-            this.setState({pip:false});
         }
+    }
+    pipDisable=()=>{
+        this.setState({pip:false});
     }
     shuffle=()=>{
         //console.log(originalPlaylist);
@@ -241,7 +237,7 @@ class Player extends React.Component{
             <div>
                 <MuiThemeProvider theme={playerTheme}>
                     <CssBaseline/>
-                    <div style= {classes.video} onMouseOver={this.hoverOverPlayer} onMouseOut={this.hoverOutPlayer}>
+                    <div style= {classes.video} onMouseEnter={this.hoverOverPlayer} onMouseLeave={this.hoverOutPlayer}>
                         <ReactPlayer 
                             config={{file:{attributes:{autopictureinpicture:true}}}}
                             onContextMenu={e=>e.preventDefault()}
@@ -254,6 +250,7 @@ class Player extends React.Component{
                             pip={pip}
                             width= {pipWidth}
                             height= {pipHeight}
+                            onDisablePIP = {this.pipDisable}
                             onReady={this.playerReady}
                             onProgress={this.videoProgress}
                             onDuration={this.videoDuration}
