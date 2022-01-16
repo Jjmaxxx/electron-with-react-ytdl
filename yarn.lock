@@ -1146,6 +1146,11 @@
   "resolved" "https://registry.npmjs.org/@ffprobe-installer/win32-x64/-/win32-x64-4.1.0.tgz"
   "version" "4.1.0"
 
+"@fontsource/roboto@^4.5.1":
+  "integrity" "sha512-3mhfL+eNPG/woMNqwD/OHaW5qMpeGEBsDwzmhFmjB1yUV+M+M9P0NhP/AyHvnGz3DrqkvZ7CPzNMa+UkVLeELg=="
+  "resolved" "https://registry.npmjs.org/@fontsource/roboto/-/roboto-4.5.1.tgz"
+  "version" "4.5.1"
+
 "@hapi/hoek@^9.0.0":
   "integrity" "sha512-gfta+H8aziZsm8pZa0vj04KO6biEiisppNgA1kbJvFrrWu9Vm7eaUEy76DIxsuTaWvti5fkJVhllWc6ZTE+Mdw=="
   "resolved" "https://registry.npmjs.org/@hapi/hoek/-/hoek-9.2.1.tgz"

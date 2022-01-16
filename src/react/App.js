@@ -70,6 +70,9 @@ class App extends React.Component{
   handleNewSelectedFile=(data)=>{
     this.setState({selectedFile:data});
   }
+  downloadingVideo=(data)=>{
+    ipcRenderer.send('download', data);
+  }
   render(){
     const classes = styles;
     return (
@@ -125,10 +128,9 @@ class App extends React.Component{
             let component;
             // console.log(this.state.page);
             if(this.state.page === "downloader"){
-              component = <YoutubeDownload/>;
+              component = <YoutubeDownload downloadVideo = {this.downloadingVideo}/>;
             }else{
               component = <Playlist appHeight = {this.state.height} selectedFile = {this.state.selectedFile} sendFileToParent = {this.handleFileSelect} key= {this.state.page} path={this.state.page}/>
-              console.log(this.state.filesList)
             }
             return(
               component

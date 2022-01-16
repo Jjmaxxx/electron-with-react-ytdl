@@ -103,7 +103,9 @@ class Player extends React.Component{
                 this.setState({video:this.state.filePath + this.state.playlist[this.state.vidIndex][0]},()=>{
                     fileType = this.state.video.substring(this.state.video.length-3);
                     vidTitle = this.state.video.substring(0,this.state.video.length-4).substring(this.state.video.lastIndexOf('/')+1);
-                    console.log(fileType);
+                    this.setState({selected:this.state.playlist[index][0]},()=>{
+                        this.props.sendFileToParent(this.state.selected);
+                    });
                     if(fileType === "mp4"){
                         pipWidth = "250px";
                         pipHeight = "120px";
@@ -226,9 +228,6 @@ class Player extends React.Component{
     }
     nextVideo=()=>{
         let nextVid = this.state.vidIndex+1;
-        // this.setState({selected:nextVideo},()=>{
-        //     this.props.sendFileToParent(this.state.selected);
-        // });
         if(nextVid < this.state.playlist.length){
             this.getNewVideo(nextVid);
         }

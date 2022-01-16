@@ -3,16 +3,20 @@ import styles from './utils/styles.js';
 import { Button, TextField } from "@material-ui/core";
 import Alert from '@material-ui/lab/Alert';
 import helperFunctions from './utils/helperFunctions.js';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
 const { ipcRenderer } = window.require("electron");
 let qualities,link;
 let restrictedFileSymbols = ['<','>',':','/',"\"",'\\','|','?','*'];
 let restrictedFileNames = ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"]
 let selections = new Map();
-
 class YoutubeDownload extends React.Component{
     constructor(props){
         super(props);
+        this.titleRef = React.createRef();
         this.linkSubmit = this.linkSubmit.bind(this);
         this.changeOption = this.changeOption.bind(this);
         this.download = this.download.bind(this);
@@ -21,7 +25,8 @@ class YoutubeDownload extends React.Component{
             linkSubmitted:false, 
             fileName:"", 
             fileType:"mp3",
-            titleError:"false"
+            titleError:"false",
+            inputWidth:""
         };
     }
     changeOption= (event,args)=>{
@@ -36,13 +41,22 @@ class YoutubeDownload extends React.Component{
             console.log('Something is wrong with title');
             this.setState({titleError:true});
         }else{
-            ipcRenderer.send('download', {fileType:selections.get('mp3ormp4'), name: this.state.fileName, url: link, quality:selections.get('quality')});
+            this.props.downloadVideo({fileType:selections.get('mp3ormp4'), name: this.state.fileName, url: link, quality:selections.get('quality')});
+            //ipcRenderer.send('download', {fileType:selections.get('mp3ormp4'), name: this.state.fileName, url: link, quality:selections.get('quality')});
             console.log(selections.get('quality'));
             console.log(selections.get('mp3ormp4'));
         }
     }
     getName=(event)=>{
-        this.setState({fileName:event.target.value});
+        this.setState({fileName:event.target.value},()=>{
+            this.changeInputWidth();
+        });
+    }
+    changeInputWidth=()=>{
+        this.titleRef.current.innerHTML = this.state.fileName;
+        this.setState({inputWidth:this.titleRef.current.getBoundingClientRect().width + 30},()=>{
+            console.log(this.state.inputWidth)
+        })
     }
     linkSubmit = (event) => {
         event.preventDefault();
@@ -73,7 +87,9 @@ class YoutubeDownload extends React.Component{
                 newTitle+= vidTitle.slice(min,i+1);
             }
         }
-        this.setState({fileName:newTitle});
+        this.setState({fileName:newTitle},()=>{
+            this.changeInputWidth();
+        });
     }
     detectRestrictedTitles=(vidTitle)=>{
         for(let i=0; i<vidTitle.length;i++){
@@ -81,7 +97,7 @@ class YoutubeDownload extends React.Component{
                 return false;
             };
         }
-        if(restrictedFileNames.includes(vidTitle)){
+        if(restrictedFileNames.includes(vidTitle) || vidTitle.length < 1 || vidTitle.length > 200){
             return false;
         }
         return true;
@@ -111,7 +127,7 @@ class YoutubeDownload extends React.Component{
                                     size="small"
                                     color="secondary"
                                     value={this.state.fileName} 
-                                    style={{top:"10px", width: `${(8*this.state.fileName.length)+20}px`}}
+                                    style={{top:"10px", minWidth:"60px", maxWidth:"500px", width: this.state.inputWidth}}
                                     onChange = {this.getName}
                                 />
                                 {
@@ -170,6 +186,7 @@ class YoutubeDownload extends React.Component{
                     }
                     })()}      
                 </div> 
+                <span ref={this.titleRef} style={{visibility:"hidden",whiteSpace:"pre", fontSize:"16px",fontFamily:"Roboto", fontWeight:"400"}}></span>
             </div>
         )
     }

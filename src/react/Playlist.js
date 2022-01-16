@@ -13,7 +13,7 @@ class Playlist extends React.Component{
         this.state = {
             playlist:[],
             loading:true,
-            selectedIndex:null,
+            selectedFile:null,
             playing:false,
             openFileOptionsMenu:false,
             anchorEl:null,
@@ -37,7 +37,7 @@ class Playlist extends React.Component{
         if(props.selectedFile !== null){
             return{
                 songListHeight:(props.appHeight - 357) + "px",
-                // selectedIndex:props.selectedFile
+                selectedFile:props.selectedFile
             }
         }else{
             return{
@@ -46,12 +46,16 @@ class Playlist extends React.Component{
         }
         //this.setState({songListHeight:props.appHeight + "px"});
     }
+    deleteSong = (event,index)=>{
+        console.log(index);
+    }
     handleFileClick = (event,file, index)=>{
         console.log(this.state.playlist);
         this.props.sendFileToParent([this.state.playlist,index]);
         this.setState({playing:true});
-        this.setState({selectedIndex:index});
-        console.log(this.state.selectedIndex);
+        this.setState({selectedFile:file},()=>{
+            console.log(this.state.selectedFile);
+        });
     }
     moreFileOptionsButton = (event)=>{
         if(this.state.openFileOptionsMenu){
@@ -63,7 +67,7 @@ class Playlist extends React.Component{
     }
     render(){
         const classes = styles;
-        const {anchorEl, loading, songListHeight, selectedIndex, openFileOptionsMenu} = this.state;
+        const {anchorEl, loading, songListHeight, selectedFile, openFileOptionsMenu} = this.state;
         return(
             <div>
               <div style={classes.playlistHeading}>
@@ -101,7 +105,7 @@ class Playlist extends React.Component{
                         <div style= {{marginLeft:"200px",display:"flex",width:"70%",position:"absolute"}}>
                             <ListItemIcon style={{marginTop:"3px"}}>
                                 {
-                                    selectedIndex === index ? 
+                                    selectedFile === data[0] ? 
                                     <PlayArrowIcon color="primary"/>
                                     :
                                     <PlayCircleFilledIcon color="primary" />
@@ -126,8 +130,8 @@ class Playlist extends React.Component{
                                 anchorEl={anchorEl}
                                 color="primary"
                                 >
-                                    <MenuItem>Add to Queue</MenuItem>
-                                    <MenuItem>Delete</MenuItem>
+                                    <MenuItem>Move</MenuItem>
+                                    <MenuItem onClick={(event)=>{this.deleteSong(event,data[0])}} >Delete</MenuItem>
                                 </Menu>
                             }
                         </IconButton>
