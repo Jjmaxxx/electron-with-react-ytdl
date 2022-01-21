@@ -1,6 +1,6 @@
 import React from 'react';
-import { IconButton, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@material-ui/core";
-import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import { IconButton, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 const { ipcRenderer } = window.require("electron");
 
 export default function CreateFolderForm() {

@@ -1,11 +1,11 @@
 import React from "react";
 import styles from './utils/styles.js';
 import helperFunctions from './utils/helperFunctions.js';
-import { Divider, CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem} from "@material-ui/core";
-import FolderIcon from '@material-ui/icons/Folder';
-import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import { Divider, CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Menu, MenuItem} from "@mui/material";
+import FolderIcon from '@mui/icons-material/Folder';
+import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 const { ipcRenderer } = window.require("electron");
 class Playlist extends React.Component{
     constructor(props){
@@ -47,7 +47,7 @@ class Playlist extends React.Component{
         //this.setState({songListHeight:props.appHeight + "px"});
     }
     deleteSong = (event,index)=>{
-        console.log(index);
+        console.log(event.currentTarget.parentNode);
     }
     handleFileClick = (event,file, index)=>{
         console.log(this.state.playlist);

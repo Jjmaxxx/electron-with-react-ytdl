@@ -1,7 +1,7 @@
 import React from "react";
 import styles from './utils/styles.js';
-import { Button, TextField } from "@material-ui/core";
-import Alert from '@material-ui/lab/Alert';
+import { Button, TextField } from "@mui/material";
+import Alert from '@mui/material/Alert';
 import helperFunctions from './utils/helperFunctions.js';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';

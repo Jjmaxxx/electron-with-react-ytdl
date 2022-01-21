@@ -7,14 +7,14 @@ import Playlist from "./Playlist.js";
 //import CreateFolderForm from './CreateFolderForm.js';
 import styles from './utils/styles.js';
 import theme from './utils/appTheme.js';
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { MuiThemeProvider } from "@material-ui/core/styles";
-import { Divider, List, ListItem, ListItemIcon, ListItemText, Drawer } from "@material-ui/core";
-import GetAppIcon from '@material-ui/icons/GetApp';
-import AddIcon from '@material-ui/icons/Add';
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import { Divider, List, ListItem, ListItemIcon, ListItemText, Drawer } from "@mui/material";
+import GetAppIcon from '@mui/icons-material/GetApp';
+import AddIcon from '@mui/icons-material/Add';
 import CreateFolderForm from "./CreateFolderForm.js";
 //import ResizeableInput from './ResizeableInput.js';
-//import { NativeSelect, MenuList, MenuItem } from '@material-ui/core';
+//import { NativeSelect, MenuList, MenuItem } from '@mui/material';
 const { ipcRenderer } = window.require("electron");
 const downloadFolder = './videos/';
 export let windowDimensions;
@@ -79,7 +79,7 @@ class App extends React.Component{
       //App
       //, backgroundColor:"#222831"}
       <div className="App" style={{height:"100%",overflow: "hidden"}}>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <CssBaseline/>
           <div color="primary" style= {classes.root} >
             <Drawer 
@@ -136,7 +136,7 @@ class App extends React.Component{
               component
             )
           })()}
-        </MuiThemeProvider>
+        </ThemeProvider>
       </div>
     );
   }

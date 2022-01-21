@@ -1,25 +1,25 @@
 import React from "react";
 import ReactPlayer from 'react-player/file';
 import styles from './utils/styles.js';
-import { Drawer , IconButton, Slider, Grid, Dialog} from "@material-ui/core";
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import PauseIcon from '@material-ui/icons/Pause';
-import FastRewindIcon from '@material-ui/icons/FastRewind';
-import FastForwardIcon from '@material-ui/icons/FastForward';
-import VolumeDown from '@material-ui/icons/VolumeDown';
-import VolumeUp from '@material-ui/icons/VolumeUp';
-import MusicNoteIcon from '@material-ui/icons/MusicNote';
-import MovieIcon from '@material-ui/icons/Movie';
-import ShuffleIcon from '@material-ui/icons/Shuffle';
-import CloseIcon from '@material-ui/icons/Close';
-import LoopIcon from '@material-ui/icons/Loop';
+import { Drawer , IconButton, Slider, Grid, Dialog} from "@mui/material";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import FastRewindIcon from '@mui/icons-material/FastRewind';
+import FastForwardIcon from '@mui/icons-material/FastForward';
+import VolumeDown from '@mui/icons-material/VolumeDown';
+import VolumeUp from '@mui/icons-material/VolumeUp';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import MovieIcon from '@mui/icons-material/Movie';
+import ShuffleIcon from '@mui/icons-material/Shuffle';
+import CloseIcon from '@mui/icons-material/Close';
+import LoopIcon from '@mui/icons-material/Loop';
 import playerTheme from './utils/playerTheme.js';
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { MuiThemeProvider } from "@material-ui/core/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
 import helperFunctions from './utils/helperFunctions.js';
-import QueueMusicIcon from '@material-ui/icons/QueueMusic';
-import PictureInPictureIcon from '@material-ui/icons/PictureInPicture';
-import PictureInPictureAltIcon from '@material-ui/icons/PictureInPictureAlt';
+import QueueMusicIcon from '@mui/icons-material/QueueMusic';
+import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
+import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
 
 let video,fileType,vidTitle,pipWidth,pipHeight, originalPlaylist;
 
@@ -97,6 +97,8 @@ class Player extends React.Component{
     // this.setState({filesList:this.props.filesList});
     // this.setState({video:this.props.filePath});
     getNewVideo= (index)=>{
+        this.setState({videoTime:"0:00"});
+        this.setState({rawVideoTime:0})
         this.setState({pip:false});
         this.setState({vidIndex:index},()=>{
             if(this.state.playlist.length > 0){
@@ -238,7 +240,7 @@ class Player extends React.Component{
         //console.log("render running")
         return(
             <div>
-                <MuiThemeProvider theme={playerTheme}>
+                <ThemeProvider theme={playerTheme}>
                     <CssBaseline/>
                     <div style= {classes.video} onMouseEnter={this.hoverOverPlayer} onMouseLeave={this.hoverOutPlayer}>
                         <ReactPlayer 
@@ -365,7 +367,7 @@ class Player extends React.Component{
                                     min={0}
                                     max= {duration}
                                     value={rawVideoTime}
-                                    onChange={(event,value)=>{this.setState({rawVideoTime:value})}}
+                                    onChange={(event,value)=>{this.setState({rawVideoTime:value});this.setState({videoTime:helperFunctions.getFancyTime(value)});}}
                                     onMouseDown={(event)=>{
                                         this.setState({seeking:true});
                                         this.setState({playing:false});
@@ -385,7 +387,7 @@ class Player extends React.Component{
                             </Grid>
                         </Grid>
                     </Drawer>
-                </MuiThemeProvider>
+                </ThemeProvider>
             </div>
         )
     }
