@@ -12,8 +12,6 @@ const styles = {
       width: "300px",
       height:"100%",
       flexShrink: 0,
-      backgroundColor:"#12171d"
-
     },
     drawerPaper:{
       width: "300px",
@@ -78,6 +76,23 @@ const styles = {
       justifyContent:"center",
       alignItems:"center", 
       width:"100%"
+    },
+    playlistListContainer:{
+      display:"flex", 
+      width:"100%", 
+      backgroundColor:"#0d1217",
+    },
+    playlistContainer:{
+      '&::-webkit-scrollbar': {
+        width: '10px',
+        height: '10px', 
+      },
+      '&::-webkit-scrollbar-track': {
+          backgroundColor:"#00adb5"
+      },
+      '&::-webkit-scrollbar-thumb': {
+          backgroundColor:"#007d85",
+      }
     },
     playerIcons:{
       marginTop:"5px"

@@ -101,6 +101,22 @@ ipcMain.on('download', async(event,args)=>{
   console.log('a')
   //event.reply('')
 })
+ipcMain.on('deleteFile', async(event, args)=>{
+  console.log(args);
+  let file = path.join(downloadFolder,args[0]);
+  file= path.join(file, args[1]);
+  console.log(file);
+  fs.unlink(file, function(err) {
+    if(err && err.code == 'ENOENT') {
+      console.info("file doesn't exist");
+    }else if(err) {
+      console.error("error when trying to remove file");
+    }else {
+      console.info('removed');
+      event.reply('deletedFile',args[1]);
+    }
+});
+})
 // ipcMain.on('synchronous-message', (event, arg) => {
 //   console.log(arg) // prints "ping"
 //   event.returnValue = 'pong'

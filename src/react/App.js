@@ -105,7 +105,7 @@ class App extends React.Component{
                 <div style={{color:"#007d85", fontSize:"17px"}}>Playlists</div>
                   <CreateFolderForm/>
               </div>
-              <Divider style={{backgroundColor:"#007d85"}}/>
+              <Divider/>
                 {/* playlist list */}
                 <List style={{width:"200px",textOverflow: "ellipsis",  whiteSpace: "nowrap",overflow: "hidden"}}>
                 {
@@ -116,7 +116,7 @@ class App extends React.Component{
                   ))
                 }
                 </List>
-              <Divider style={{backgroundColor:"#007d85"}}/>
+              <Divider/>
               {/* <div style={{width:"180px"}}>
                 <p style = {classes.drawerTabs}>youtube download</p>
                 <p style = {classes.drawerTabs}>downloads</p>
@@ -130,7 +130,7 @@ class App extends React.Component{
             if(this.state.page === "downloader"){
               component = <YoutubeDownload downloadVideo = {this.downloadingVideo}/>;
             }else{
-              component = <Playlist appHeight = {this.state.height} selectedFile = {this.state.selectedFile} sendFileToParent = {this.handleFileSelect} key= {this.state.page} path={this.state.page}/>
+              component = <Playlist appHeight = {this.state.height} folders = {this.state.foldersList} selectedFile = {this.state.selectedFile} sendFileToParent = {this.handleFileSelect} key= {this.state.page} path={this.state.page}/>
             }
             return(
               component

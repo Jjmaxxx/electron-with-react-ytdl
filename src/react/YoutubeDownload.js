@@ -3,10 +3,6 @@ import styles from './utils/styles.js';
 import { Button, TextField } from "@mui/material";
 import Alert from '@mui/material/Alert';
 import helperFunctions from './utils/helperFunctions.js';
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
 
 const { ipcRenderer } = window.require("electron");
 let qualities,link;

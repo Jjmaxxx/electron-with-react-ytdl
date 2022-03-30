@@ -1,18 +1,21 @@
 import { createTheme } from '@mui/material/styles';
 
 const playerTheme = createTheme({
-  overrides:{
+  components:{
     // MuiButton: {
     //     root: {
 
     //     }, 
     //   },
-      MuiDrawer: {
+    MuiDrawer: {
+      styleOverrides: {
         paper: {
           backgroundColor: "#000000"
         }
-      }, 
-      MuiDialog:{
+      }
+    },
+    MuiDialog:{
+      styleOverrides: {
         root:{
           backgroundColor:"#00adb5",
         },
@@ -22,8 +25,10 @@ const playerTheme = createTheme({
         PaperProps:{
           backgroundColor:"#00adb5",
         }
-      },
-      MuiCssBaseline: {
+      }
+    },
+    MuiCssBaseline: {
+      styleOverrides: {
         '@global': {
           '*': {
             'scrollbar-width': 'thin',
@@ -48,6 +53,7 @@ const playerTheme = createTheme({
           }
         }
       }
+    }    
   },
   palette: {
     primary: {
