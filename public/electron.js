@@ -101,10 +101,22 @@ ipcMain.on('download', async(event,args)=>{
   console.log('a')
   //event.reply('')
 })
+ipcMain.on('moveFile', async(event, args)=>{
+  let filePath = path.join(downloadFolder,args.fileFolder);
+  filePath= path.join(filePath, args.file);
+  let targetFolder = path.join(downloadFolder, args.targetFolder);
+  targetFolder = path.join(targetFolder,args.file);
+  console.log("targetFolder: "+ targetFolder);
+  console.log("filePath: " + filePath);
+  fs.rename(filePath, targetFolder, (err)=> {
+    if (err) throw err;
+    console.log('moved')
+  })
+})
 ipcMain.on('deleteFile', async(event, args)=>{
   console.log(args);
-  let file = path.join(downloadFolder,args[0]);
-  file= path.join(file, args[1]);
+  let file = path.join(downloadFolder,args.path);
+  file= path.join(file, args.file);
   console.log(file);
   fs.unlink(file, function(err) {
     if(err && err.code == 'ENOENT') {
@@ -113,7 +125,7 @@ ipcMain.on('deleteFile', async(event, args)=>{
       console.error("error when trying to remove file");
     }else {
       console.info('removed');
-      event.reply('deletedFile',args[1]);
+      event.reply('deletedFile',args.file);
     }
 });
 })

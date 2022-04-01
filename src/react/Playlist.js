@@ -7,6 +7,7 @@ import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 const { ipcRenderer } = window.require("electron");
+let selectedFile;
 class Playlist extends React.Component{
     constructor(props){
         super(props);
@@ -66,9 +67,12 @@ class Playlist extends React.Component{
         this.setState({indexFile:index});
         this.setState({anchorEl:event.currentTarget});
     }
-    moveFile = (event)=>{
-        let file = this.state.playlist[this.state.indexFile];
-        console.log(file);
+    moveFile = (event, folder)=>{
+        ipcRenderer.send("moveFile",{file:selectedFile[0], fileFolder: this.props.path,targetFolder:folder});
+        this.closeDialog();
+    }
+    moveFilePrompt = (event)=>{
+        selectedFile = this.state.playlist[this.state.indexFile];
         this.setState({openMoveFileDialog:true})
     }
     closeDialog= ()=>{
@@ -78,7 +82,7 @@ class Playlist extends React.Component{
         let currPlaylist = Array.from(this.state.playlist);
         console.log(currPlaylist);
         console.log(currPlaylist[this.state.indexFile]);
-        ipcRenderer.send("deleteFile",[this.props.path, currPlaylist[this.state.indexFile][0]]);
+        ipcRenderer.send("deleteFile",{path: this.props.path, file: currPlaylist[this.state.indexFile][0]});
         ipcRenderer.on("deletedFile",(event,fileName)=>{
             console.log('a');
             let deletedFile = currPlaylist.findIndex((file)=>file[0] === fileName);
@@ -173,7 +177,7 @@ class Playlist extends React.Component{
                                     anchorEl={anchorEl}
                                     color="primary"
                                 >
-                                    <MenuItem onClick={this.moveFile}>Move</MenuItem>
+                                    <MenuItem onClick={this.moveFilePrompt}>Move</MenuItem>
                                     <MenuItem onClick={this.deleteFile}>Delete</MenuItem>
                                 </Menu>
                             }
@@ -192,7 +196,7 @@ class Playlist extends React.Component{
                     <List>
                         {this.props.folders.map((value)=>{
                             return(
-                                <ListItemButton key={value}>
+                                <ListItemButton onClick = {(event)=>{this.moveFile(event,value)}} key={value}>
                                     <ListItemText 
                                         primary={value}
                                     />
