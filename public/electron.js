@@ -48,6 +48,11 @@ ipcMain.on("getFiles", async(event, folderName)=>{
     let files = [];
     let num = 0;
     let folderFiles = fs.readdirSync(folderName);
+    console.log(folderFiles)
+    if(!folderFiles.length){
+      console.log("no files")
+      event.reply('gotFiles', null);
+    }
     folderFiles.forEach(async (file, index, array) =>{
       //index doesnt work because it will keep adding before getaudioduration is fully done
       let filePath = path.join(folderName,file)
@@ -110,7 +115,8 @@ ipcMain.on('moveFile', async(event, args)=>{
   console.log("filePath: " + filePath);
   fs.rename(filePath, targetFolder, (err)=> {
     if (err) throw err;
-    console.log('moved')
+    console.log('moved');
+    event.reply('fileMoved',args.file);
   })
 })
 ipcMain.on('deleteFile', async(event, args)=>{

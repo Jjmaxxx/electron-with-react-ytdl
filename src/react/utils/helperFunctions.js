@@ -17,6 +17,13 @@ const helperFunctions = {
     }else{
       return Math.floor(seconds/60)+ ":" +Math.floor(seconds - Math.floor(seconds/60) * 60)
     }
+  },
+  findSong:function(songsList,currSong){
+    let currSongIndex = songsList.findIndex((element)=> element[0] === currSong);
+    if(currSongIndex === -1){
+      currSongIndex = 0;
+    }
+    return currSongIndex;
   }
 }
 export default helperFunctions;

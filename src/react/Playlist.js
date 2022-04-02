@@ -1,13 +1,13 @@
 import React from "react";
 import styles from './utils/styles.js';
 import helperFunctions from './utils/helperFunctions.js';
-import { Divider, Dialog, DialogTitle, CircularProgress, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem} from "@mui/material";
+import { Button, Divider, Dialog, DialogTitle, CircularProgress, TextField, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem} from "@mui/material";
 import FolderIcon from '@mui/icons-material/Folder';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 const { ipcRenderer } = window.require("electron");
-let selectedFile;
+let fileToBeMoved;
 class Playlist extends React.Component{
     constructor(props){
         super(props);
@@ -20,15 +20,25 @@ class Playlist extends React.Component{
             anchorEl:null,
             songListHeight:"0px",
             indexFile:null,
-            openMoveFileDialog:false
+            openMoveFileDialog:false,
+            openRenameFileDialog:false,
+            numberOfSongs:0,
+            empty:null,
         }
     }
     componentDidMount(){
         ipcRenderer.send("getFiles",this.props.path);
         ipcRenderer.on('gotFiles',(event,files)=>{
-            this.setState({playlist:files},()=>{
-                console.log(this.state.playlist);
-            });
+            console.log('a')
+            if(files == null){
+                this.setState({empty:true});
+                console.log('a')
+            }else{
+                this.setState({playlist:files},()=>{
+                    console.log(this.state.playlist);
+                    this.setState({numberOfSongs:this.state.playlist.length})
+                });
+            }
             this.setState({loading:false});
         })
         console.log(this.props.folders);
@@ -68,38 +78,52 @@ class Playlist extends React.Component{
         this.setState({anchorEl:event.currentTarget});
     }
     moveFile = (event, folder)=>{
-        ipcRenderer.send("moveFile",{file:selectedFile[0], fileFolder: this.props.path,targetFolder:folder});
+        let currPlaylist = Array.from(this.state.playlist);
+        ipcRenderer.send("moveFile",{file:fileToBeMoved[0], fileFolder: this.props.path,targetFolder:folder});
         this.closeDialog();
+        ipcRenderer.on('fileMoved', (event, fileName)=>{
+            this.removeFileFromPlaylist(currPlaylist, fileName);
+        })
     }
     moveFilePrompt = (event)=>{
-        selectedFile = this.state.playlist[this.state.indexFile];
+        fileToBeMoved = this.state.playlist[this.state.indexFile];
         this.setState({openMoveFileDialog:true})
     }
+    renameFilePrompt = (event)=>{
+        fileToBeMoved = this.state.playlist[this.state.indexFile];
+        this.setState({openRenameFileDialog:true})
+    }
     closeDialog= ()=>{
-        this.setState({openMoveFileDialog:false})
+        this.setState({openMoveFileDialog:false});
+        this.setState({openRenameFileDialog:false});
+    }
+    removeFileFromPlaylist = (currPlaylist, fileName) =>{
+        let removedFile = helperFunctions.findSong(currPlaylist, fileName)
+        currPlaylist.splice(removedFile,1);
+        this.setState({playlist:currPlaylist},()=>{
+            // let findCurrSongIndex = this.state.playlist.findIndex((file)=> file[0] === this.state.selectedFile);
+            // if(findCurrSongIndex !== -1){
+            //     // findCurrSongIndex = removedFile;
+            //     this.props.sendFileToParent([this.state.playlist,findCurrSongIndex]);
+            // }else if(findCurrSongIndex === -1 && fileName === this.state.selectedFile){
+            //     findCurrSongIndex = removedFile;
+            //     this.props.sendFileToParent([this.state.playlist,findCurrSongIndex]);
+            // }
+        })
     }
     deleteFile = (event)=>{
         let currPlaylist = Array.from(this.state.playlist);
-        console.log(currPlaylist);
-        console.log(currPlaylist[this.state.indexFile]);
-        ipcRenderer.send("deleteFile",{path: this.props.path, file: currPlaylist[this.state.indexFile][0]});
+        // console.log(currPlaylist);
+        // console.log(currPlaylist[this.state.indexFile]);
+        ipcRenderer.send("deleteFile",{path: this.props.path, file: this.state.playlist[this.state.indexFile][0]});
         ipcRenderer.on("deletedFile",(event,fileName)=>{
             console.log('a');
-            let deletedFile = currPlaylist.findIndex((file)=>file[0] === fileName);
-            console.log(deletedFile);
-            currPlaylist.splice(deletedFile,1);
-            this.setState({playlist:currPlaylist},()=>{
-                let findCurrSongIndex = this.state.playlist.findIndex((file)=> file[0] === this.state.selectedFile);
-                if(findCurrSongIndex === -1){
-                    findCurrSongIndex = deletedFile;
-                }
-                this.props.sendFileToParent([this.state.playlist,findCurrSongIndex]);
-            })   
+            this.removeFileFromPlaylist(currPlaylist, fileName)
         })
     }
     render(){
         const classes = styles;
-        const {anchorEl, loading, songListHeight, selectedFile, openFileOptionsMenu, openMoveFileDialog} = this.state;
+        const {anchorEl, empty, loading, songListHeight, selectedFile, numberOfSongs, openFileOptionsMenu, openMoveFileDialog,openRenameFileDialog} = this.state;
         return(
             <div style={classes.playlistContainer}>
               <div style={classes.playlistHeading}>
@@ -112,7 +136,7 @@ class Playlist extends React.Component{
                             {this.props.path}  
                         </div>
                         <div style={classes.playlistDescription}>
-                            random bs playlist information
+                            {numberOfSongs} songs
                         </div>
                     </div>
                 </div>
@@ -122,6 +146,9 @@ class Playlist extends React.Component{
                 <div style={{display:"flex",justifyContent:"center", alignItems:"center", marginLeft:"180px",height:"100%",marginTop:"20px"}}>
                     <CircularProgress color="primary"/>
                 </div>
+              )}
+              {empty && (
+                  <div style={{color:"#007d85", display:"flex",justifyContent:"center", alignItems:"center", marginLeft:"180px",height:"100%",marginTop:"20px"}}>There's no songs in here :/</div>
               )}
               <List sx = {{
                 display:'flex',
@@ -177,6 +204,7 @@ class Playlist extends React.Component{
                                     anchorEl={anchorEl}
                                     color="primary"
                                 >
+                                    <MenuItem onClick={this.renameFilePrompt}>Rename</MenuItem>
                                     <MenuItem onClick={this.moveFilePrompt}>Move</MenuItem>
                                     <MenuItem onClick={this.deleteFile}>Delete</MenuItem>
                                 </Menu>
@@ -204,6 +232,19 @@ class Playlist extends React.Component{
                             )
                         })}
                     </List>
+                </Dialog>
+                <Dialog
+                    open = {openRenameFileDialog}
+                    onClose = {this.closeDialog}
+                    color="primary"
+                >
+                    <div style={{display:"flex", flexDirection:"column", margin:"10px", marginBottom:"0"}}>
+                        <DialogTitle color ="secondary">Rename File to What?</DialogTitle>
+                        <TextField color="primary" id="filled-basic" label="Input Name Here" variant="filled" autoFocus/>
+                        <div style={{marginLeft:"auto",padding:"8px", paddingRight:"0"}}>
+                            <Button variant="contained" color="primary" type="submit">Submit</Button>
+                        </div>
+                    </div>
                 </Dialog>
             </div>
         )

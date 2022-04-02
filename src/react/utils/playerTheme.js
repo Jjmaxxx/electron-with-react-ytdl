@@ -14,6 +14,13 @@ const playerTheme = createTheme({
         }
       }
     },
+    MuiPaper:{
+      styleOverrides: {
+        root:{
+          backgroundColor:"#121921",
+        }
+      }
+    },
     MuiDialog:{
       styleOverrides: {
         root:{
@@ -24,6 +31,91 @@ const playerTheme = createTheme({
         },
         PaperProps:{
           backgroundColor:"#00adb5",
+        }
+      }
+    },
+    MuiSvgIcon:{
+      styleOverrides:{
+        root:{
+          color:"#007d85"
+        }
+      }
+    },
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          color:"#007d85",
+          '&$selected': {
+            backgroundColor: "#4dadb5",
+            "& .MuiSvgIcon-root ": {
+              color: "#007d85"
+            }
+          },
+        },
+        button:{
+          "&:hover": {
+            color: "#4dadb5",
+            "& .MuiSvgIcon-root ": {
+              color: "#4dadb5"
+            }
+          },
+        } 
+      }
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          color:"#007d85",
+          '&$selected': {
+            backgroundColor: "#4dadb5",
+            "& .MuiSvgIcon-root ": {
+              color: "#007d85"
+            }
+          },
+        }
+      }
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          "& $notchedOutline": {
+            borderColor: "#62676f"
+          },
+          "&:hover:not($disabled):not($focused):not($error) $notchedOutline": {
+            borderColor: "#62676f"
+          },
+          "& .MuiSvgIcon-root": {
+            color: "#62676f",
+          }
+        }  
+      }
+
+    },
+    MuiInputBase :{
+      styleOverrides: {
+        input:{
+          color:"#00adb5",
+        }
+      }
+
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color:"#007d85"
+        }
+      }
+      
+    },
+    MuiInput: {
+      styleOverrides: {
+        underline: {
+          "&:before": {
+            borderBottomColor:"#62676f"
+          },
+          '&:hover:not($disabled):before': {
+            borderBottomColor:"#62676f"
+          },
         }
       }
     },

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactPlayer from 'react-player/file';
 import styles from './utils/styles.js';
-import { Drawer , IconButton, Slider, Grid, Dialog} from "@mui/material";
+import { Drawer , IconButton, Slider, List, ListItemButton, ListItemIcon, ListItemText, Grid, Dialog} from "@mui/material";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
@@ -13,6 +13,7 @@ import MovieIcon from '@mui/icons-material/Movie';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import CloseIcon from '@mui/icons-material/Close';
 import LoopIcon from '@mui/icons-material/Loop';
+import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import playerTheme from './utils/playerTheme.js';
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
@@ -20,9 +21,11 @@ import helperFunctions from './utils/helperFunctions.js';
 import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
-
+import Slide from '@mui/material/Slide';
 let video,fileType,vidTitle,pipWidth,pipHeight, originalPlaylist;
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 class Player extends React.Component{
     constructor(props){
         super(props);
@@ -40,12 +43,14 @@ class Player extends React.Component{
             loop:false,
             pip:false,
             openQueue:false,
+            //if can find shuffle in localstorage, if true then get it, if false then return false
             shuffle: localStorage.getItem('shuffle') ? JSON.parse(localStorage.getItem('shuffle')) : false ,
             selected:"",
             selectedVideo: false,
             video:"",
             videoSelection:null,
-            vidIndex:""
+            vidIndex:"",
+            currSong:""
         }
     }
     componentDidMount(){
@@ -54,7 +59,7 @@ class Player extends React.Component{
         this.setState({playing:true}); 
         //console.log(this.props.filesList)
         originalPlaylist = this.props.filesList;
-        // console.log(originalPlaylist);
+        console.log(originalPlaylist);
         this.setState({playlist:originalPlaylist});
         this.setState({filePath:this.props.filePath});
         pipWidth ="0px";
@@ -101,25 +106,28 @@ class Player extends React.Component{
         this.setState({rawVideoTime:0})
         this.setState({pip:false});
         this.setState({vidIndex:index},()=>{
-            if(this.state.playlist.length > 0){
-                this.setState({video:this.state.filePath + this.state.playlist[this.state.vidIndex][0]},()=>{
-                    fileType = this.state.video.substring(this.state.video.length-3);
-                    vidTitle = this.state.video.substring(0,this.state.video.length-4).substring(this.state.video.lastIndexOf('/')+1);
-                    this.setState({selected:this.state.playlist[index][0]},()=>{
-                        this.props.sendFileToParent(this.state.selected);
+            this.setState({currSong:this.state.playlist[this.state.vidIndex][0]},()=>{
+                console.log(this.state.currSong)
+                if(this.state.playlist.length > 0){
+                    this.setState({video:this.state.filePath + this.state.currSong},()=>{
+                        fileType = this.state.video.substring(this.state.video.length-3);
+                        vidTitle = this.state.video.substring(0,this.state.video.length-4).substring(this.state.video.lastIndexOf('/')+1);
+                        this.setState({selected:this.state.playlist[index][0]},()=>{
+                            this.props.sendFileToParent(this.state.selected);
+                        });
+                        if(fileType === "mp4"){
+                            pipWidth = "250px";
+                            pipHeight = "120px";
+                        }else{
+                            pipWidth = "0px";
+                            pipHeight = "0px";
+                        }
+                        //if this console.log is not instant when new file this will break fix it
+                        // console.log(this.state.video);
+                        // console.log(this.state.playlist);
                     });
-                    if(fileType === "mp4"){
-                        pipWidth = "250px";
-                        pipHeight = "120px";
-                    }else{
-                        pipWidth = "0px";
-                        pipHeight = "0px";
-                    }
-                    //if this console.log is not instant when new file this will break fix it
-                    // console.log(this.state.video);
-                    // console.log(this.state.playlist);
-                });
-            }
+                }
+            })
         });
     }
     hoverOverPlayer=()=>{
@@ -174,10 +182,10 @@ class Player extends React.Component{
         songsList.splice(songsList.findIndex((element)=> element === currSong), 1);
         songsList.splice(0,0, currSong);
         //console.log(songsList);
-        this.setState({vidIndex:0});
         this.setState({playlist:songsList},()=>{
             //console.log(this.state.filesList);
         });
+        this.setState({vidIndex:0});
     }
     pip=()=>{
         if(!this.state.pip){
@@ -194,6 +202,8 @@ class Player extends React.Component{
         if(this.state.shuffle){
             this.setState({shuffle:false});
             this.setState({playlist:originalPlaylist},()=>{
+                let songsList = Array.from(originalPlaylist);
+                this.setState({vidIndex:helperFunctions.findSong(songsList, this.state.currSong)});
                 // console.log(this.state.playlist)
             });
             window.localStorage.setItem('shuffle', JSON.stringify(false));
@@ -204,10 +214,10 @@ class Player extends React.Component{
             this.shufflePlaylist();
             window.localStorage.setItem('shuffle', JSON.stringify(true));
         }
+        console.log(this.state.vidIndex);
         console.log(this.state.playlist);
         //console.log(JSON.parse(localStorage.getItem('shuffle')));
     }
-
     loop=()=>{
         if(!this.state.loop){
             this.setState({loop:true});
@@ -236,7 +246,7 @@ class Player extends React.Component{
     }
     render(){
         const classes = styles;
-        const {video, playing, volume, rawVideoTime, videoTime, duration, loop, shuffle, openQueue, pip, hoverPlayer} = this.state;
+        const {video, playing, volume, rawVideoTime, videoTime, duration, loop, shuffle, openQueue, pip, hoverPlayer, selected} = this.state;
         //console.log("render running")
         return(
             <div>
@@ -291,7 +301,7 @@ class Player extends React.Component{
                                     }
                                 </div>
                                 {/* 15 characters limit */}
-                                <div style={{color:"#00adb5", marginLeft:"10px", overflow:"hidden",textOverflow: "ellipsis"}}>{vidTitle}<br/><div style={{color:"#00adb5"}}>Unknown Artist</div></div>
+                                <div style={{color:"#00adb5", marginLeft:"10px", overflow:"hidden",textOverflow: "ellipsis"}}>{vidTitle}</div>
                             </div>
                                 <div style = {classes.playPauseIconContainer}>
                                     <IconButton style={classes.playerIcons} onClick={this.shuffle}color = "secondary">
@@ -330,9 +340,9 @@ class Player extends React.Component{
                                 </IconButton>
                                 <Dialog
                                     fullScreen
+                                    TransitionComponent={Transition}
                                     open={openQueue}
                                     onClose={this.closeQueue}
-                                    color="inherit"
                                 >
                                     <IconButton
                                         edge="start"
@@ -341,6 +351,51 @@ class Player extends React.Component{
                                     >
                                         <CloseIcon />
                                     </IconButton>
+                                    <List sx = {{
+                                        display:'flex',
+                                        flexDirection:"column", 
+                                        padding:"0", 
+                                        height: "100%",
+                                        overflow: "auto",     
+                                        '&::-webkit-scrollbar': {
+                                            width: '10px',
+                                            height: '10px', 
+                                        },
+                                        '&::-webkit-scrollbar-track': {
+                                            backgroundColor:"#00adb5"
+                                        },
+                                        '&::-webkit-scrollbar-thumb': {
+                                            backgroundColor:"#007d85",
+                                        }}}>
+                                        {this.state.playlist.map((data,index) => (
+                                            <div style ={classes.playlistListContainer}>
+                                                <ListItemButton 
+                                                    style={{width:"100%"}} 
+                                                    color="primary"  
+                                                    selected = {false}
+                                                    onClick = {(()=>{this.getNewVideo(index)})}
+                                                    key={index}
+                                                >
+                                                    <div style= {{marginLeft:"20px",display:"flex",width:"100%"}}>
+                                                        <ListItemIcon style={{marginTop:"3px"}}>
+                                                        {
+                                                            selected === this.state.playlist[index][0] ? 
+                                                            <PlayArrowIcon color="primary"/>
+                                                            :
+                                                            <PlayCircleFilledIcon color="primary" />
+                                                        }
+                                                        </ListItemIcon>
+                                                        <ListItemText 
+                                                            style={{width:"100%", textOverflow: "ellipsis",whiteSpace:"nowrap",overflow:"hidden"}}
+                                                            primary={data[0].substring(0,data[0].length-4)}
+                                                        />
+                                                        <p style={{color:"#007d85", marginBottom:"auto",marginTop:"auto"}}>{helperFunctions.getFancyTime(this.state.playlist[index][1])}</p>
+                                                    </div>
+                                            
+                                                </ListItemButton>
+                                            </div>
+                                        ))}
+                                    </List>
                                 </Dialog>
                                     <Grid style={classes.volumeBar} container spacing={2} >
                                         <Grid item>
