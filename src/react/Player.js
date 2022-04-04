@@ -35,12 +35,12 @@ class Player extends React.Component{
             filePath:"",
             hoverPlayer:true,
             playing: false,
-            volume:0.1,
+            volume:localStorage.getItem('volume') ? JSON.parse(localStorage.getItem('volume')) : 0.1 ,
             videoTime:"0:00",
             rawVideoTime:0,
             duration:0,
             seeking:false,
-            loop:false,
+            loop:localStorage.getItem('loop') ? JSON.parse(localStorage.getItem('loop')) : false ,
             pip:false,
             openQueue:false,
             //if can find shuffle in localstorage, if true then get it, if false then return false
@@ -163,6 +163,11 @@ class Player extends React.Component{
             this.player.seekTo(0);
         }
     }
+    changeVolume=(event, value)=>{
+        this.setState({volume:value/500},()=>{
+            window.localStorage.setItem('volume', JSON.stringify(this.state.volume));
+        });
+    }
     //https://bost.ocks.org/mike/shuffle/
     shufflePlaylist=()=>{
         let songsList = Array.from(originalPlaylist);
@@ -220,9 +225,13 @@ class Player extends React.Component{
     }
     loop=()=>{
         if(!this.state.loop){
-            this.setState({loop:true});
+            this.setState({loop:true},()=>{
+                window.localStorage.setItem('loop', JSON.stringify(this.state.loop));
+            });
         }else{
-            this.setState({loop:false});
+            this.setState({loop:false},()=>{
+                window.localStorage.setItem('loop', JSON.stringify(this.state.loop));
+            });
         }
     }
     videoProgress= (state)=>{
@@ -404,7 +413,7 @@ class Player extends React.Component{
                                         <Grid item xs>
                                         <Slider 
                                             aria-labelledby="continuous-slider"
-                                            onChange= {(e,value)=>{this.setState({volume:value/500})}}
+                                            onChange= {(event,value)=>{this.changeVolume(event,value)}}
                                             value={volume*500}
                                         />
                                         </Grid>

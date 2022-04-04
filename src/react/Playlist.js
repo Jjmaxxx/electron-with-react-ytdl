@@ -1,7 +1,7 @@
 import React from "react";
 import styles from './utils/styles.js';
 import helperFunctions from './utils/helperFunctions.js';
-import { Button, Divider, Dialog, DialogTitle, CircularProgress, TextField, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem} from "@mui/material";
+import { Alert, Button, Divider, Dialog, DialogTitle, CircularProgress, TextField, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem} from "@mui/material";
 import FolderIcon from '@mui/icons-material/Folder';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -24,6 +24,8 @@ class Playlist extends React.Component{
             openRenameFileDialog:false,
             numberOfSongs:0,
             empty:null,
+            renameName:"",
+            titleError:false
         }
     }
     componentDidMount(){
@@ -93,9 +95,42 @@ class Playlist extends React.Component{
         fileToBeMoved = this.state.playlist[this.state.indexFile];
         this.setState({openRenameFileDialog:true})
     }
+    renameFile = (event)=>{
+        let newName = this.state.renameName;
+        console.log(newName);
+        if(!helperFunctions.detectRestrictedTitles(newName)){
+            console.log('Something is wrong with title');
+            this.setState({titleError:true});
+        }else{
+            ipcRenderer.send("renameFile",{file:fileToBeMoved, fileFolder: this.props.path,newName:helperFunctions.changeRestrictedTitles(newName)});
+        }
+        console.log(newName);
+        ipcRenderer.on('fileRenamed', (event, args)=>{
+            this.closeDialog();
+            let currPlaylist = Array.from(this.state.playlist);
+            let renamedFile = helperFunctions.findSong(currPlaylist, args.prevName[0]);
+            console.log(renamedFile);
+            args.prevName[0] = args.newName + ".mp3";
+            currPlaylist.splice(renamedFile, 1, args.prevName)
+            console.log(currPlaylist)
+            this.setState({playlist:currPlaylist},()=>{
+                let findCurrSongIndex = this.state.playlist.findIndex((file)=> file[0] === this.state.selectedFile);
+                if(findCurrSongIndex === -1){
+                    findCurrSongIndex = 0;
+                }
+                this.props.sendFileToParent([this.state.playlist,findCurrSongIndex]);
+            });
+        })
+    }
+    renameName = (event)=>{
+        this.setState({renameName:event.target.value},()=>{
+            console.log(this.state.renameName)
+        })
+    }
     closeDialog= ()=>{
         this.setState({openMoveFileDialog:false});
         this.setState({openRenameFileDialog:false});
+        this.setState({titleError:false});
     }
     removeFileFromPlaylist = (currPlaylist, fileName) =>{
         let removedFile = helperFunctions.findSong(currPlaylist, fileName)
@@ -123,7 +158,7 @@ class Playlist extends React.Component{
     }
     render(){
         const classes = styles;
-        const {anchorEl, empty, loading, songListHeight, selectedFile, numberOfSongs, openFileOptionsMenu, openMoveFileDialog,openRenameFileDialog} = this.state;
+        const {anchorEl, empty, loading, songListHeight, selectedFile, numberOfSongs, renameName, openFileOptionsMenu, openMoveFileDialog,openRenameFileDialog} = this.state;
         return(
             <div style={classes.playlistContainer}>
               <div style={classes.playlistHeading}>
@@ -240,9 +275,17 @@ class Playlist extends React.Component{
                 >
                     <div style={{display:"flex", flexDirection:"column", margin:"10px", marginBottom:"0"}}>
                         <DialogTitle color ="secondary">Rename File to What?</DialogTitle>
-                        <TextField color="primary" id="filled-basic" label="Input Name Here" variant="filled" autoFocus/>
+                        <TextField onChange = {this.renameName} color="primary" id="filled-basic" label="Input Name Here" variant="filled" autoFocus/>
+                        {
+                            this.state.titleError === true ?
+                                <div style= {{display:"flex",justifyContent:"center", alignItems:"center",flexDirection:"column"}}>
+                                    <Alert variant="filled" color="secondary" severity="error" style={{color:"white", textAlign:'center', marginTop:'8px',backgroundColor:"red"}}>There's an error with the title, fix it!</Alert>
+                                </div>
+                            :
+                                <div/>
+                        }     
                         <div style={{marginLeft:"auto",padding:"8px", paddingRight:"0"}}>
-                            <Button variant="contained" color="primary" type="submit">Submit</Button>
+                            <Button onClick = {this.renameFile} variant="contained" color="primary" type="submit">Submit</Button>
                         </div>
                     </div>
                 </Dialog>

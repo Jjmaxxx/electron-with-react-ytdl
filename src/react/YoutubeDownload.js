@@ -6,8 +6,6 @@ import helperFunctions from './utils/helperFunctions.js';
 
 const { ipcRenderer } = window.require("electron");
 let qualities,link;
-let restrictedFileSymbols = ['<','>',':','/',"\"",'\\','|','?','*'];
-let restrictedFileNames = ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"]
 let selections = new Map();
 class YoutubeDownload extends React.Component{
     constructor(props){
@@ -33,7 +31,7 @@ class YoutubeDownload extends React.Component{
     }
     download=(event)=>{
         event.preventDefault();
-        if(!this.detectRestrictedTitles(this.state.fileName)){
+        if(!helperFunctions.detectRestrictedTitles(this.state.fileName)){
             console.log('Something is wrong with title');
             this.setState({titleError:true});
         }else{
@@ -60,43 +58,15 @@ class YoutubeDownload extends React.Component{
         link=event.target[0].value;
         ipcRenderer.send('sent-link', link);
         ipcRenderer.on('vid-info', (event, vid) => {
-            this.changeRestrictedTitles(vid.name);
+            this.setState({fileName:helperFunctions.changeRestrictedTitles(vid.name)},()=>{
+                this.changeInputWidth();
+            });
             //this.setState({fileName:vid.name});
             qualities = vid.qualityList;
             selections.set("quality", vid.qualityList[0].value);
             selections.set("mp3ormp4", "mp3");
             this.setState({linkSubmitted:true});
         })
-    }
-    changeRestrictedTitles=(vidTitle)=>{
-        let newTitle = "";
-        let min = 0;
-        for(let i=0; i<vidTitle.length;i++){
-            while(restrictedFileSymbols.includes(vidTitle[min])){
-              min++;
-              i=min;
-            }
-            if (restrictedFileSymbols.includes(vidTitle[i])){
-                newTitle+= vidTitle.slice(min,i);
-                min=i+=1;
-            }else if(i+1 === vidTitle.length){
-                newTitle+= vidTitle.slice(min,i+1);
-            }
-        }
-        this.setState({fileName:newTitle},()=>{
-            this.changeInputWidth();
-        });
-    }
-    detectRestrictedTitles=(vidTitle)=>{
-        for(let i=0; i<vidTitle.length;i++){
-            if(restrictedFileSymbols.includes(vidTitle[i])){
-                return false;
-            };
-        }
-        if(restrictedFileNames.includes(vidTitle) || vidTitle.length < 1 || vidTitle.length > 200){
-            return false;
-        }
-        return true;
     }
     render(){
         const classes = styles;
@@ -129,9 +99,9 @@ class YoutubeDownload extends React.Component{
                                 {
                                     this.state.titleError === true ?
                                         <div style= {{display:"flex",justifyContent:"center", alignItems:"center",flexDirection:"column"}}>
-                                            <Alert color="primary" severity="error" style={{color:"red", textAlign:'center'}}>There's an error with the title, fix it!</Alert>
+                                            <Alert color="primary" severity="error" variant="filled" style={{color:"white", backgroundColor:"red", textAlign:'center', marginTop:"20px"}}>There's an error with the title, fix it!</Alert>
                                             {/* //'<','>',':','/',"\"",'\\','|','?','*' */}
-                                            <div style={{color:"red"}}>Symbols(&lt;, &gt;, :, /, ", \, |, ?, *) are not allowed. Other special names are also not allowed (e.g. CON)</div>
+                                           {/* <div style={{color:"red"}}>Symbols(&lt;, &gt;, :, /, ", \, |, ?, *) are not allowed. Other special names are also not allowed (e.g. CON)</div>*/}
                                         </div>
                                     :
                                         <div/>

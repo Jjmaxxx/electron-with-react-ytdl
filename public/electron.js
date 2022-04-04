@@ -119,6 +119,16 @@ ipcMain.on('moveFile', async(event, args)=>{
     event.reply('fileMoved',args.file);
   })
 })
+ipcMain.on('renameFile', async(event, args)=>{
+  let filePath = path.join(downloadFolder,args.fileFolder);
+  console.log(path.join(filePath,args.file[0]));
+  console.log(path.join(filePath,args.newName))
+  fs.rename(path.join(filePath,args.file[0]), path.join(filePath,args.newName) +  ".mp3", (err)=> {
+    if (err) throw err;
+    console.log('renamed');
+    event.reply('fileRenamed',{prevName:args.file, newName:args.newName});
+  })
+})
 ipcMain.on('deleteFile', async(event, args)=>{
   console.log(args);
   let file = path.join(downloadFolder,args.path);
