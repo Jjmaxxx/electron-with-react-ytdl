@@ -34,7 +34,7 @@ class Player extends React.Component{
             playlist:[],
             filePath:"",
             hoverPlayer:true,
-            playing: false,
+            playing: localStorage.getItem('playing') ? JSON.parse(localStorage.getItem('playing')) : true ,
             volume:localStorage.getItem('volume') ? JSON.parse(localStorage.getItem('volume')) : 0.1 ,
             videoTime:"0:00",
             rawVideoTime:0,
@@ -55,11 +55,10 @@ class Player extends React.Component{
     }
     componentDidMount(){
         //this.getNewVideo(this.props.index);
-        console.log('remounted')
-        this.setState({playing:true}); 
+        //console.log('remounted')
         //console.log(this.props.filesList)
         originalPlaylist = this.props.filesList;
-        console.log(originalPlaylist);
+        //console.log(originalPlaylist);
         this.setState({playlist:originalPlaylist});
         this.setState({filePath:this.props.filePath});
         pipWidth ="0px";
@@ -92,9 +91,9 @@ class Player extends React.Component{
     }
     ref = player => {
         this.player = player;
-        if(this.player != null){
-            console.log(this.player.player);
-        }
+        // if(this.player != null){
+        //     console.log(this.player.player);
+        // }
         // console.log(this.player.getActivePlayer());
         //this.player.requestPictureInPicture();
         //console.log(this.player);
@@ -107,7 +106,7 @@ class Player extends React.Component{
         this.setState({pip:false});
         this.setState({vidIndex:index},()=>{
             this.setState({currSong:this.state.playlist[this.state.vidIndex][0]},()=>{
-                console.log(this.state.currSong)
+                // console.log(this.state.currSong)
                 if(this.state.playlist.length > 0){
                     this.setState({video:this.state.filePath + this.state.currSong},()=>{
                         fileType = this.state.video.substring(this.state.video.length-3);
@@ -143,16 +142,20 @@ class Player extends React.Component{
         this.setState({openQueue:false})
     }
     playerReady= ()=>{
-        console.log('run')
+        // console.log('run')
         if(video === null){
             console.log('no video found')
         }
     }
     play=()=>{
         if(this.state.playing){
-            this.setState({playing:false});
+            this.setState({playing:false},()=>{
+                window.localStorage.setItem('playing', JSON.stringify(this.state.playing));
+            });
         }else{
-            this.setState({playing:true});
+            this.setState({playing:true},()=>{
+                window.localStorage.setItem('playing', JSON.stringify(this.state.playing));
+            });
         }
     }
     rewind=()=>{
@@ -219,8 +222,8 @@ class Player extends React.Component{
             this.shufflePlaylist();
             window.localStorage.setItem('shuffle', JSON.stringify(true));
         }
-        console.log(this.state.vidIndex);
-        console.log(this.state.playlist);
+        // console.log(this.state.vidIndex);
+        // console.log(this.state.playlist);
         //console.log(JSON.parse(localStorage.getItem('shuffle')));
     }
     loop=()=>{

@@ -5,6 +5,7 @@ import { Alert, Button, Divider, Dialog, DialogTitle, CircularProgress, TextFiel
 import FolderIcon from '@mui/icons-material/Folder';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 const { ipcRenderer } = window.require("electron");
 let fileToBeMoved;
@@ -17,7 +18,7 @@ class Playlist extends React.Component{
             selectedFile:null,
             playing:false,
             openFileOptionsMenu:false,
-            anchorEl:null,
+            fileMoreAnchorEl:null,
             songListHeight:"0px",
             indexFile:null,
             openMoveFileDialog:false,
@@ -31,19 +32,17 @@ class Playlist extends React.Component{
     componentDidMount(){
         ipcRenderer.send("getFiles",this.props.path);
         ipcRenderer.on('gotFiles',(event,files)=>{
-            console.log('a')
             if(files == null){
                 this.setState({empty:true});
-                console.log('a')
             }else{
                 this.setState({playlist:files},()=>{
-                    console.log(this.state.playlist);
+                    // console.log(this.state.playlist);
                     this.setState({numberOfSongs:this.state.playlist.length})
                 });
             }
             this.setState({loading:false});
         })
-        console.log(this.props.folders);
+        // console.log(this.props.folders);
     }
     componentWillUnmount(){
         ipcRenderer.removeAllListeners("gotFiles");
@@ -62,11 +61,10 @@ class Playlist extends React.Component{
         //this.setState({songListHeight:props.appHeight + "px"});
     }
     handleFileClick = (event,file, index)=>{
-        console.log(event);
         this.props.sendFileToParent([this.state.playlist,index]);
         this.setState({playing:true});
         this.setState({selectedFile:file},()=>{
-            console.log(this.state.selectedFile);
+            // console.log(this.state.selectedFile);
         });
     }
     moreFileOptionsButton = (event,index)=>{
@@ -75,9 +73,8 @@ class Playlist extends React.Component{
         }else{
             this.setState({openFileOptionsMenu: true});
         }
-        console.log(index)
         this.setState({indexFile:index});
-        this.setState({anchorEl:event.currentTarget});
+        this.setState({fileMoreAnchorEl:event.currentTarget});
     }
     moveFile = (event, folder)=>{
         let currPlaylist = Array.from(this.state.playlist);
@@ -97,22 +94,22 @@ class Playlist extends React.Component{
     }
     renameFile = (event)=>{
         let newName = this.state.renameName;
-        console.log(newName);
+        // console.log(newName);
         if(!helperFunctions.detectRestrictedTitles(newName)){
             console.log('Something is wrong with title');
             this.setState({titleError:true});
         }else{
             ipcRenderer.send("renameFile",{file:fileToBeMoved, fileFolder: this.props.path,newName:helperFunctions.changeRestrictedTitles(newName)});
         }
-        console.log(newName);
+        // console.log(newName);
         ipcRenderer.on('fileRenamed', (event, args)=>{
             this.closeDialog();
             let currPlaylist = Array.from(this.state.playlist);
             let renamedFile = helperFunctions.findSong(currPlaylist, args.prevName[0]);
-            console.log(renamedFile);
+            // console.log(renamedFile);
             args.prevName[0] = args.newName + ".mp3";
             currPlaylist.splice(renamedFile, 1, args.prevName)
-            console.log(currPlaylist)
+            // console.log(currPlaylist)
             this.setState({playlist:currPlaylist},()=>{
                 let findCurrSongIndex = this.state.playlist.findIndex((file)=> file[0] === this.state.selectedFile);
                 if(findCurrSongIndex === -1){
@@ -124,7 +121,7 @@ class Playlist extends React.Component{
     }
     renameName = (event)=>{
         this.setState({renameName:event.target.value},()=>{
-            console.log(this.state.renameName)
+            // console.log(this.state.renameName)
         })
     }
     closeDialog= ()=>{
@@ -152,13 +149,13 @@ class Playlist extends React.Component{
         // console.log(currPlaylist[this.state.indexFile]);
         ipcRenderer.send("deleteFile",{path: this.props.path, file: this.state.playlist[this.state.indexFile][0]});
         ipcRenderer.on("deletedFile",(event,fileName)=>{
-            console.log('a');
+            // console.log('a');
             this.removeFileFromPlaylist(currPlaylist, fileName)
         })
     }
     render(){
         const classes = styles;
-        const {anchorEl, empty, loading, songListHeight, selectedFile, numberOfSongs, renameName, openFileOptionsMenu, openMoveFileDialog,openRenameFileDialog} = this.state;
+        const {fileMoreAnchorEl, empty, loading, songListHeight, selectedFile, numberOfSongs, renameName, openFileOptionsMenu, openMoveFileDialog,openRenameFileDialog} = this.state;
         return(
             <div style={classes.playlistContainer}>
               <div style={classes.playlistHeading}>
@@ -168,12 +165,17 @@ class Playlist extends React.Component{
                     </div>
                     <div style={classes.playlistTitleContainer}>
                         <div style={classes.playlistTitle}>
-                            {this.props.path}  
+                            {this.props.path}
                         </div>
                         <div style={classes.playlistDescription}>
                             {numberOfSongs} songs
                         </div>
                     </div>
+                    <div style={classes.playlistMore}>
+                        <IconButton>
+                            <MoreVertIcon fontSize="large" color="primary"/>
+                        </IconButton>
+                    </div>  
                 </div>
               </div>
               <Divider/>
@@ -236,7 +238,7 @@ class Playlist extends React.Component{
                                 (openFileOptionsMenu ) && 
                                 <Menu
                                     open={openFileOptionsMenu}
-                                    anchorEl={anchorEl}
+                                    anchorEl={fileMoreAnchorEl}
                                     color="primary"
                                 >
                                     <MenuItem onClick={this.renameFilePrompt}>Rename</MenuItem>
@@ -259,7 +261,10 @@ class Playlist extends React.Component{
                     <List>
                         {this.props.folders.map((value)=>{
                             return(
-                                <ListItemButton onClick = {(event)=>{this.moveFile(event,value)}} key={value}>
+                                <ListItemButton 
+                                    onClick = {(event)=>{this.moveFile(event,value)}} 
+                                    key={value}
+                                >
                                     <ListItemText 
                                         primary={value}
                                     />

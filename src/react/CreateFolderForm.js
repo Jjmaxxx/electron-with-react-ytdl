@@ -23,8 +23,8 @@ export default function CreateFolderForm() {
   
     return (
       <div>
-        <IconButton>
-            <CreateNewFolderIcon onClick={handleClickOpen}color="primary" fontSize="large"/>
+        <IconButton onClick={handleClickOpen}>
+          <CreateNewFolderIcon color="primary" fontSize="large"/>
         </IconButton>
         <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
           <div style={{backgroundColor:"#121921"}}>

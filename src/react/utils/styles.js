@@ -150,7 +150,8 @@ const styles = {
     },
     playlistImageContainer:{
       marginLeft:"250px", 
-      display:"flex"
+      display:"flex",
+      width:"100%"
     },
     playlistImage:{
       width:"110px", 
@@ -161,7 +162,8 @@ const styles = {
     playlistTitleContainer:{
       display:"flex", 
       flexDirection:"column", 
-      justifyContent:"flex-end"
+      justifyContent:"flex-end",
+      width:"100%"
     },
     playlistTitle:{
       fontWeight:"bolder", 
@@ -173,6 +175,11 @@ const styles = {
       fontSize:"15px", 
       color:"#00adb5", 
       marginLeft:"10px"
+    },
+    playlistMore:{
+      display:"flex", 
+      justifyContent:"flex-end",
+      flexDirection:"column"
     }
 };
 export default styles;

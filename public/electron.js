@@ -31,6 +31,11 @@ app.whenReady().then(()=>{
       }
   })
 })
+
+ipcMain.on('openFolders', async(event,path)=>{
+  openFolder = path.join(__dirname,path);
+  require('child_process').exec(`start "" "${openFolder}"`);
+})
 ipcMain.on('getFolders', async(event,folderPath)=>{
   downloadFolder = path.join(__dirname,folderPath);
   let folders = [];
@@ -48,9 +53,9 @@ ipcMain.on("getFiles", async(event, folderName)=>{
     let files = [];
     let num = 0;
     let folderFiles = fs.readdirSync(folderName);
-    console.log(folderFiles)
+    // console.log(folderFiles)
     if(!folderFiles.length){
-      console.log("no files")
+      // console.log("no files")
       event.reply('gotFiles', null);
     }
     folderFiles.forEach(async (file, index, array) =>{
@@ -78,7 +83,7 @@ ipcMain.on("getFiles", async(event, folderName)=>{
       console.error(error);
     });
     sortFiles.then((data)=>{
-      console.log(data);
+      // console.log(data);
       event.reply('gotFiles', data);
     })
     //console.log(data);
@@ -111,29 +116,28 @@ ipcMain.on('moveFile', async(event, args)=>{
   filePath= path.join(filePath, args.file);
   let targetFolder = path.join(downloadFolder, args.targetFolder);
   targetFolder = path.join(targetFolder,args.file);
-  console.log("targetFolder: "+ targetFolder);
-  console.log("filePath: " + filePath);
+  // console.log("targetFolder: "+ targetFolder);
+  // console.log("filePath: " + filePath);
   fs.rename(filePath, targetFolder, (err)=> {
     if (err) throw err;
-    console.log('moved');
     event.reply('fileMoved',args.file);
   })
 })
 ipcMain.on('renameFile', async(event, args)=>{
   let filePath = path.join(downloadFolder,args.fileFolder);
-  console.log(path.join(filePath,args.file[0]));
-  console.log(path.join(filePath,args.newName))
+  // console.log(path.join(filePath,args.file[0]));
+  // console.log(path.join(filePath,args.newName))
   fs.rename(path.join(filePath,args.file[0]), path.join(filePath,args.newName) +  ".mp3", (err)=> {
     if (err) throw err;
-    console.log('renamed');
+    // console.log('renamed');
     event.reply('fileRenamed',{prevName:args.file, newName:args.newName});
   })
 })
 ipcMain.on('deleteFile', async(event, args)=>{
-  console.log(args);
+  // console.log(args);
   let file = path.join(downloadFolder,args.path);
   file= path.join(file, args.file);
-  console.log(file);
+  // console.log(file);
   fs.unlink(file, function(err) {
     if(err && err.code == 'ENOENT') {
       console.info("file doesn't exist");

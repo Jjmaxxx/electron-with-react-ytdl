@@ -51,6 +51,9 @@ class App extends React.Component{
     this.setState({ width: window.innerWidth, height: window.innerHeight });
     windowDimensions = {width: window.innerWidth, height: window.innerHeight}
   }
+  openFolders = ()=>{
+    ipcRenderer.send('openFolders', downloadFolder)
+  }
   getFoldersList=(path)=>{
     ipcRenderer.send('getFolders', path);
     ipcRenderer.on('gotFolders',(event,folders)=>{
@@ -88,13 +91,13 @@ class App extends React.Component{
               anchor="left"
             >
               <List>
-                <ListItem button onClick={this.handleDownloadSelect}>
+                <ListItem button onClick={this.handleDownloadSelect} key="0">
                   <ListItemIcon>
                     <GetAppIcon fontSize="large" color="primary" />
                   </ListItemIcon>
                   <ListItemText primary={"Download"}/>
                 </ListItem>
-                <ListItem button>
+                <ListItem onClick={this.openFolders} button key ="1">
                   <ListItemIcon>
                     <AddIcon fontSize="large" color="primary" />
                   </ListItemIcon>

@@ -131,18 +131,18 @@ const playerTheme = createTheme({
           // '& .MuiDialogActions-root': {
           //   backgroundColor:"#00adb5"
           // },
-          '*::-webkit-scrollbar': {
-            width: '10px',
-            height: '10px',
+          // '*::-webkit-scrollbar': {
+          //   width: '10px',
+          //   height: '10px',
             
-          },
-          '*::-webkit-scrollbar-track': {
-            backgroundColor:"#00adb5"
+          // },
+          // '*::-webkit-scrollbar-track': {
+          //   backgroundColor:"#00adb5"
             
-          },
-          '*::-webkit-scrollbar-thumb': {
-            backgroundColor:"#007d85",
-          }
+          // },
+          // '*::-webkit-scrollbar-thumb': {
+          //   backgroundColor:"#007d85",
+          // }
         }
       }
     }    
