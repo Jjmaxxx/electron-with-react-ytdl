@@ -1,5 +1,6 @@
 let restrictedFileSymbols = ['<','>',':','/',"\"",'\\','|','?','*'];
 let restrictedFileNames = ["CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"]
+let playlistMap = new Map();
 const helperFunctions = {
   setOptions:function(options){
     let optionsList = [];
@@ -52,6 +53,16 @@ const helperFunctions = {
       return false;
     } 
     return true;
+  },
+  addPlaylistToMap:(path,playlist)=>{
+    playlistMap.set(path,playlist);
+  },
+  getPlaylistFromMap:(path)=>{
+    console.log(playlistMap);
+    if(playlistMap.has(path)){
+      return playlistMap.get(path);
+    }
+    return false;
   }
 }
 export default helperFunctions;

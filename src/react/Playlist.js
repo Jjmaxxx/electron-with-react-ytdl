@@ -30,17 +30,32 @@ class Playlist extends React.Component{
         }
     }
     componentDidMount(){
-        ipcRenderer.send("getFiles",this.props.path);
+        ipcRenderer.send("getFiles",{path:this.props.path,getPlaylistFromMap:helperFunctions.getPlaylistFromMap(this.props.path)});
+        console.log("playlist mounted")
         ipcRenderer.on('gotFiles',(event,files)=>{
-            if(files == null){
-                this.setState({empty:true});
-            }else{
-                this.setState({playlist:files},()=>{
-                    // console.log(this.state.playlist);
-                    this.setState({numberOfSongs:this.state.playlist.length})
+            if(files){
+                let sortFiles = new Promise(resolve=>{
+                    resolve(
+                        files.sort((a,b)=>{
+                            return(b[2] - a[2]);
+                        })
+                    )
+                }).catch((error) => {
+                    console.error(error);
                 });
+                sortFiles.then((data)=>{
+                    this.setState({playlist:files},()=>{
+                        helperFunctions.addPlaylistToMap(this.props.path,this.state.playlist);
+                        console.log(helperFunctions.getPlaylistFromMap(this.props.path))
+                        this.setState({numberOfSongs:this.state.playlist.length})
+                    });
+                    this.setState({loading:false});
+                })
+            }else{
+                this.setState({empty:true});
+                this.setState({loading:false});
             }
-            this.setState({loading:false});
+            //console.log(data);
         })
         // console.log(this.props.folders);
     }
@@ -116,6 +131,7 @@ class Playlist extends React.Component{
                     findCurrSongIndex = 0;
                 }
                 this.props.sendFileToParent([this.state.playlist,findCurrSongIndex]);
+                helperFunctions.addPlaylistToMap(this.props.path,this.state.playlist);
             });
         })
     }
@@ -133,6 +149,7 @@ class Playlist extends React.Component{
         let removedFile = helperFunctions.findSong(currPlaylist, fileName)
         currPlaylist.splice(removedFile,1);
         this.setState({playlist:currPlaylist},()=>{
+            helperFunctions.addPlaylistToMap(this.props.path,this.state.playlist);
             // let findCurrSongIndex = this.state.playlist.findIndex((file)=> file[0] === this.state.selectedFile);
             // if(findCurrSongIndex !== -1){
             //     // findCurrSongIndex = removedFile;

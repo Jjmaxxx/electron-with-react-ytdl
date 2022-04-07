@@ -47,47 +47,47 @@ ipcMain.on('getFolders', async(event,folderPath)=>{
   await findPath();
   event.reply('gotFolders', folders);
 })
-ipcMain.on("getFiles", async(event, folderName)=>{
-  folderName = path.join(downloadFolder, folderName);
-  let getFiles = new Promise(resolve=>{
-    let files = [];
-    let num = 0;
-    let folderFiles = fs.readdirSync(folderName);
-    // console.log(folderFiles)
-    if(!folderFiles.length){
-      // console.log("no files")
-      event.reply('gotFiles', null);
-    }
-    folderFiles.forEach(async (file, index, array) =>{
+ipcMain.on("getFiles", (event, data)=>{
+  data.path = path.join(downloadFolder, data.path);
+  let files = [];
+  let folderFiles = fs.readdirSync(data.path);
+  // console.log(folderFiles)
+  if(!folderFiles.length){
+    // console.log("no files")
+    event.reply('gotFiles', null);
+  }
+  else if(data.getPlaylistFromMap !== false && data.getPlaylistFromMap.length == folderFiles.length){
+    event.reply('gotFiles',data.getPlaylistFromMap);
+  }
+  else{
+    folderFiles.forEach((file) =>{
       //index doesnt work because it will keep adding before getaudioduration is fully done
-      let filePath = path.join(folderName,file)
-      await getAudioDurationInSeconds(filePath).then((duration) => {
-        num+=1;
+      let filePath = path.join(data.path,file)
+      getAudioDurationInSeconds(filePath).then((duration) => {
         files.push([file,duration,fs.statSync(filePath).birthtimeMs]);
-        if(num === array.length){
-          resolve(files);
-        }
+        event.reply('gotFiles', files);
+        // if(num === array.length){
+        //   resolve(files);
+        // }
       }); 
     });
-  }).catch((error) => {
-    console.error(error);
-  });
-  getFiles.then((data)=>{
-    let sortFiles = new Promise(resolve=>{
-      resolve(
-        data.sort((a,b)=>{
-          return(b[2] - a[2]);
-        })
-      )
-    }).catch((error) => {
-      console.error(error);
-    });
-    sortFiles.then((data)=>{
-      // console.log(data);
-      event.reply('gotFiles', data);
-    })
-    //console.log(data);
-  })
+  }
+  // getFiles.then((data)=>{
+  //   let sortFiles = new Promise(resolve=>{
+  //     resolve(
+  //       data.sort((a,b)=>{
+  //         return(b[2] - a[2]);
+  //       })
+  //     )
+  //   }).catch((error) => {
+  //     console.error(error);
+  //   });
+  //   sortFiles.then((data)=>{
+  //     // console.log(data);
+  //     event.reply('gotFiles', data);
+  //   })
+  //   //console.log(data);
+  // })
   // console.log(files)
   // event.reply('gotFiles', files);
 })
