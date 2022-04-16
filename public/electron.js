@@ -32,8 +32,8 @@ app.whenReady().then(()=>{
   })
 })
 
-ipcMain.on('openFolders', async(event,path)=>{
-  openFolder = path.join(__dirname,path);
+ipcMain.on('openFolders', (event,folderPath)=>{
+  openFolder = path.join(__dirname,folderPath);
   require('child_process').exec(`start "" "${openFolder}"`);
 })
 ipcMain.on('getFolders', async(event,folderPath)=>{
@@ -98,12 +98,12 @@ ipcMain.on('sent-link', async(event, arg)=>{
 ipcMain.on('createFolder', (event, folderName)=>{
   let folder = path.join(downloadFolder,folderName);
   fs.ensureDirSync(folder);
-  win.webContents.send('newFolder');
+  win.webContents.send('newFolder',(folderName));
 })
 ipcMain.on('download', async(event,args)=>{
   let done;
   if(args.fileType === "mp3"){
-    done = await ytdl.audioOnly(args);
+    done = await ytdl.audioOnly({vid:args, win:win});
   }
   else{
     done = await ytdl.mergeVideoAudio(args);
@@ -113,9 +113,9 @@ ipcMain.on('download', async(event,args)=>{
 })
 ipcMain.on('moveFile', async(event, args)=>{
   let filePath = path.join(downloadFolder,args.fileFolder);
-  filePath= path.join(filePath, args.file);
+  filePath= path.join(filePath, args.file[0]);
   let targetFolder = path.join(downloadFolder, args.targetFolder);
-  targetFolder = path.join(targetFolder,args.file);
+  targetFolder = path.join(targetFolder,args.file[0]);
   // console.log("targetFolder: "+ targetFolder);
   // console.log("filePath: " + filePath);
   fs.rename(filePath, targetFolder, (err)=> {
@@ -147,7 +147,16 @@ ipcMain.on('deleteFile', async(event, args)=>{
       console.info('removed');
       event.reply('deletedFile',args.file);
     }
-});
+  }); 
+})
+ipcMain.on('deleteFolder', async(event, folderPath)=>{
+  // console.log(args);
+  let folder = path.join(downloadFolder,folderPath);
+  // console.log(file);
+  fs.remove(folder,()=>{
+    console.log("deleted " +folder);
+    win.webContents.send('folderDeleted');
+  }); 
 })
 // ipcMain.on('synchronous-message', (event, arg) => {
 //   console.log(arg) // prints "ping"

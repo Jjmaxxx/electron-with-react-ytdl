@@ -5,6 +5,7 @@ const cp = require('child_process');
 const { contextIsolated } = require("process");
 
 let vidInfo;
+let downloadedChunks=0;
 module.exports = {
   createReadableStream: (link)=>{
     return new Promise(resolve=>{
@@ -25,16 +26,21 @@ module.exports = {
         vidInfo = info;
         resolve({name:defaultName, qualityList:qualities});
     });
-    })
-      
+    })  
   },
-  audioOnly: (vid)=>{
+  audioOnly: (args)=>{
     // let path = "./src/react/videos/"+vid.name +".mp3";
-    let path = "./public/videos/downloads/"+vid.name +".mp3";
+    let path = "./public/videos/downloads/"+args.vid.name +".mp3";
     return new Promise(resolve=>{
-      ytdl(vid.url,{filter:"audioonly"}).on('progress',(_,totalDownloaded,total)=>{
-        console.log((totalDownloaded/total)*100 + "%");
+      ytdl(args.vid.url,{filter:"audioonly"}).on('progress',(_,totalDownloaded,total)=>{
+        downloadedChunks++;
+        if(downloadedChunks%30==0){
+          console.log(args.vid.name + ": " +(totalDownloaded/total)*100 + "%");
+          args.win.webContents.send('loadingBar',{name: args.vid.name + ": ", progress: (totalDownloaded/total)*100});
+        }
       }).pipe(fs.createWriteStream(path)).on('finish',()=>{
+        downloadedChunks = 0;
+        args.win.webContents.send('loadingBar',{name: args.vid.name + ": ", progress: 100});
         resolve(path);
       })
     })

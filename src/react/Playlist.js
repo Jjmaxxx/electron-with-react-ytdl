@@ -1,7 +1,7 @@
 import React from "react";
 import styles from './utils/styles.js';
 import helperFunctions from './utils/helperFunctions.js';
-import { Alert, Button, Divider, Dialog, DialogTitle, CircularProgress, TextField, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem} from "@mui/material";
+import { Alert, Button, Divider, Dialog, DialogTitle, DialogContent , DialogContentText, DialogActions, CircularProgress, TextField, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem} from "@mui/material";
 import FolderIcon from '@mui/icons-material/Folder';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -19,10 +19,13 @@ class Playlist extends React.Component{
             playing:false,
             openFileOptionsMenu:false,
             fileMoreAnchorEl:null,
+            folderMoreAnchorEl:null,
+            openFolderOptionsMenu:false,
             songListHeight:"0px",
             indexFile:null,
             openMoveFileDialog:false,
             openRenameFileDialog:false,
+            deleteFolderPrompt:false,
             numberOfSongs:0,
             empty:null,
             renameName:"",
@@ -31,7 +34,7 @@ class Playlist extends React.Component{
     }
     componentDidMount(){
         ipcRenderer.send("getFiles",{path:this.props.path,getPlaylistFromMap:helperFunctions.getPlaylistFromMap(this.props.path)});
-        console.log("playlist mounted")
+        //console.log("playlist mounted");
         ipcRenderer.on('gotFiles',(event,files)=>{
             if(files){
                 let sortFiles = new Promise(resolve=>{
@@ -46,7 +49,7 @@ class Playlist extends React.Component{
                 sortFiles.then((data)=>{
                     this.setState({playlist:files},()=>{
                         helperFunctions.addPlaylistToMap(this.props.path,this.state.playlist);
-                        console.log(helperFunctions.getPlaylistFromMap(this.props.path))
+                        //console.log(helperFunctions.getPlaylistFromMap(this.props.path))
                         this.setState({numberOfSongs:this.state.playlist.length})
                     });
                     this.setState({loading:false});
@@ -91,12 +94,30 @@ class Playlist extends React.Component{
         this.setState({indexFile:index});
         this.setState({fileMoreAnchorEl:event.currentTarget});
     }
+    moreFolderOptionsButton = (event)=>{
+        this.setState({folderMoreAnchorEl:event.currentTarget});
+        if(this.state.openFolderOptionsMenu){
+            this.setState({openFolderOptionsMenu: false});
+        }else{
+            this.setState({openFolderOptionsMenu: true});
+        }
+    }
     moveFile = (event, folder)=>{
         let currPlaylist = Array.from(this.state.playlist);
-        ipcRenderer.send("moveFile",{file:fileToBeMoved[0], fileFolder: this.props.path,targetFolder:folder});
+        ipcRenderer.send("moveFile",{file:fileToBeMoved, fileFolder: this.props.path,targetFolder:folder});
         this.closeDialog();
-        ipcRenderer.on('fileMoved', (event, fileName)=>{
-            this.removeFileFromPlaylist(currPlaylist, fileName);
+        ipcRenderer.on('fileMoved', (event, file)=>{
+            let getPlaylist = helperFunctions.getPlaylistFromMap(folder);
+            console.log(getPlaylist);
+            console.log(file);
+            if(getPlaylist){
+                getPlaylist.push(file);
+                console.log('pushed')
+                console.log(getPlaylist)
+            }
+            console.log(folder);
+            helperFunctions.addPlaylistToMap(folder,getPlaylist);
+            this.removeFileFromPlaylist(currPlaylist, file[0]);
         })
     }
     moveFilePrompt = (event)=>{
@@ -106,6 +127,9 @@ class Playlist extends React.Component{
     renameFilePrompt = (event)=>{
         fileToBeMoved = this.state.playlist[this.state.indexFile];
         this.setState({openRenameFileDialog:true})
+    }
+    deleteFolderPrompt = (event)=>{
+        this.setState({deleteFolderPrompt: true});
     }
     renameFile = (event)=>{
         let newName = this.state.renameName;
@@ -143,6 +167,7 @@ class Playlist extends React.Component{
     closeDialog= ()=>{
         this.setState({openMoveFileDialog:false});
         this.setState({openRenameFileDialog:false});
+        this.setState({deleteFolderPrompt:false});
         this.setState({titleError:false});
     }
     removeFileFromPlaylist = (currPlaylist, fileName) =>{
@@ -170,9 +195,18 @@ class Playlist extends React.Component{
             this.removeFileFromPlaylist(currPlaylist, fileName)
         })
     }
+    deleteFolder = (event)=>{
+        if(this.props.path !== "Downloads"){
+            console.log("delete:" + this.props.path);
+            ipcRenderer.send("deleteFolder",this.props.path);
+        }else{
+            console.log("Cant delete downloads folder")
+        }
+        this.closeDialog();
+    }
     render(){
         const classes = styles;
-        const {fileMoreAnchorEl, empty, loading, songListHeight, selectedFile, numberOfSongs, renameName, openFileOptionsMenu, openMoveFileDialog,openRenameFileDialog} = this.state;
+        const {fileMoreAnchorEl, empty, loading, songListHeight, selectedFile, numberOfSongs, openFolderOptionsMenu, deleteFolderPrompt, folderMoreAnchorEl, openFileOptionsMenu, openMoveFileDialog,openRenameFileDialog} = this.state;
         return(
             <div style={classes.playlistContainer}>
               <div style={classes.playlistHeading}>
@@ -189,8 +223,18 @@ class Playlist extends React.Component{
                         </div>
                     </div>
                     <div style={classes.playlistMore}>
-                        <IconButton>
+                        <IconButton onClick={this.moreFolderOptionsButton}>
                             <MoreVertIcon fontSize="large" color="primary"/>
+                            {
+                                (openFolderOptionsMenu ) && 
+                                <Menu
+                                    open={openFolderOptionsMenu}
+                                    anchorEl={folderMoreAnchorEl}
+                                    color="primary"
+                                >
+                                    <MenuItem onClick={this.deleteFolderPrompt}>Delete</MenuItem>
+                                </Menu>
+                            }
                         </IconButton>
                     </div>  
                 </div>
@@ -309,6 +353,24 @@ class Playlist extends React.Component{
                         <div style={{marginLeft:"auto",padding:"8px", paddingRight:"0"}}>
                             <Button onClick = {this.renameFile} variant="contained" color="primary" type="submit">Submit</Button>
                         </div>
+                    </div>
+                </Dialog>
+                <Dialog
+                    open = {deleteFolderPrompt}
+                    onClose = {this.closeDialog}
+                    color="primary"
+                >
+                    <div style={{display:"flex", flexDirection:"column", margin:"10px", marginBottom:"0"}}>
+                        <DialogTitle color ="secondary">Continue Deleting "{this.props.path}"?</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText color="primary">
+                                Deleting this folder will delete all the files inside of it.
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick = {this.closeDialog} variant="contained" color="primary" type="submit">Cancel</Button>
+                            <Button onClick = {this.deleteFolder}variant="contained" color="primary" type="submit">Delete</Button>
+                        </DialogActions>
                     </div>
                 </Dialog>
             </div>

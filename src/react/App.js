@@ -9,7 +9,7 @@ import styles from './utils/styles.js';
 import theme from './utils/appTheme.js';
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
-import { Divider, List, ListItem, ListItemIcon, ListItemText, Drawer } from "@mui/material";
+import { Divider, Paper, List, ListItem, ListItemIcon, ListItemText, LinearProgress, Drawer } from "@mui/material";
 import GetAppIcon from '@mui/icons-material/GetApp';
 import AddIcon from '@mui/icons-material/Add';
 import CreateFolderForm from "./CreateFolderForm.js";
@@ -17,6 +17,8 @@ import CreateFolderForm from "./CreateFolderForm.js";
 //import { NativeSelect, MenuList, MenuItem } from '@mui/material';
 const { ipcRenderer } = window.require("electron");
 const downloadFolder = './videos/';
+let downloadingFiles = [];
+// let display;
 export let windowDimensions;
 class App extends React.Component{ 
   constructor(props){
@@ -32,7 +34,8 @@ class App extends React.Component{
       page:"downloader",
       fileIndex:null,
       filesList:[],
-      selectedFile:""
+      selectedFile:"",
+      downloadingFile:[]
     };
     //this.state = {variable:'some value'}
   }
@@ -40,8 +43,34 @@ class App extends React.Component{
     this.getFoldersList(downloadFolder);
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
-    ipcRenderer.on('newFolder',(event)=>{
+    ipcRenderer.on('newFolder',(event,folder)=>{
       this.getFoldersList(downloadFolder);
+      this.setState({page:folder})
+    })
+    ipcRenderer.on('folderDeleted',(event)=>{
+      this.getFoldersList(downloadFolder);
+      this.setState({page:"Downloads"})
+    })
+    ipcRenderer.on('loadingBar',(event,vid)=>{
+      //console.log(vid.name + ": " + vid.progress);
+      let findFile = downloadingFiles.findIndex((file)=> file.name === vid.name);
+      if( findFile === -1){
+        downloadingFiles.push({name:vid.name, progress:vid.progress});
+      }else{
+        downloadingFiles[findFile].progress = vid.progress;
+      }
+      console.log(vid.progress);
+      let files=[];
+      downloadingFiles.forEach((file)=>{
+        files.push(
+          <div>
+            <div style={{marginLeft:"10px",marginRight:'10px',color:"#007d85",width:"90%",textOverflow:"ellipsis", overflow:"hidden",whiteSpace:"nowrap"}}>{file.name}</div>
+            <LinearProgress style={{marginLeft:'10px',marginBottom:"10px",marginRight:'10px'}} variant="determinate" value={file.progress}></LinearProgress>
+          </div>
+        );
+      })
+      // not keeping up bc cant setstate that fast maybe make it so it only setstates every second 
+      this.setState({downloadingFile:files})
     })
   }
   componentWillUnmount() {
@@ -57,7 +86,11 @@ class App extends React.Component{
   getFoldersList=(path)=>{
     ipcRenderer.send('getFolders', path);
     ipcRenderer.on('gotFolders',(event,folders)=>{
-      this.setState({foldersList:folders});
+      this.setState({foldersList:folders},()=>{
+        if(folders.findIndex((folder)=> folder === "Downloads") === -1){
+          ipcRenderer.send('createFolder','Downloads')
+        }
+      });
     })
   }
   handlePlaylistSelect=(event,folderName)=>{
@@ -127,6 +160,13 @@ class App extends React.Component{
             </Drawer>
             <Player key = {this.state.filesList} sendFileToParent = {this.handleNewSelectedFile} index = {this.state.fileIndex} filesList ={this.state.filesList} filePath={downloadFolder+this.state.page+"/"}/>
           </div>
+            <Paper style={{position:"fixed",backgroundColor:"black", width:"25%", left:this.state.width*.75}}>
+              {this.state.downloadingFile}
+              {/* <div>
+                <div style={{marginLeft:"10px",color:"#007d85",width:"90%",textOverflow:"ellipsis", overflow:"hidden",whiteSpace:"nowrap"}}>Title of asdasddssdasdsadadsasddadasdsaddasFile</div>
+                <LinearProgress style={{marginLeft:'10px',marginBottom:"10px"}}variant="determinate" value={50}></LinearProgress>
+              </div> */}
+            </Paper>
           {(()=>{
             let component;
             // console.log(this.state.page);
