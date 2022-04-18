@@ -106,7 +106,7 @@ ipcMain.on('download', async(event,args)=>{
     done = await ytdl.audioOnly({vid:args, win:win});
   }
   else{
-    done = await ytdl.mergeVideoAudio(args);
+    done = await ytdl.mergeVideoAudio({vid:args, win:win});
   }
   console.log('a')
   //event.reply('')

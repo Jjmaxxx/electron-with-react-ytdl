@@ -58,6 +58,9 @@ class App extends React.Component{
         downloadingFiles.push({name:vid.name, progress:vid.progress});
       }else{
         downloadingFiles[findFile].progress = vid.progress;
+        if(vid.progress === 100){
+          downloadingFiles.splice(downloadingFiles[findFile],1)
+        }
       }
       console.log(vid.progress);
       let files=[];
@@ -65,7 +68,10 @@ class App extends React.Component{
         files.push(
           <div>
             <div style={{marginLeft:"10px",marginRight:'10px',color:"#007d85",width:"90%",textOverflow:"ellipsis", overflow:"hidden",whiteSpace:"nowrap"}}>{file.name}</div>
-            <LinearProgress style={{marginLeft:'10px',marginBottom:"10px",marginRight:'10px'}} variant="determinate" value={file.progress}></LinearProgress>
+            <div style={{display:"flex"}}>
+              <LinearProgress style={{width:"100%",marginTop:"3px",marginRight:"10px",marginLeft:'10px'}}variant="determinate" value={file.progress}></LinearProgress>
+              <div style={{color:"#007d85",bottom:"5px",position:"relative",display:"inline-block"}}>{file.progress}%</div>
+            </div>
           </div>
         );
       })
@@ -164,7 +170,10 @@ class App extends React.Component{
               {this.state.downloadingFile}
               {/* <div>
                 <div style={{marginLeft:"10px",color:"#007d85",width:"90%",textOverflow:"ellipsis", overflow:"hidden",whiteSpace:"nowrap"}}>Title of asdasddssdasdsadadsasddadasdsaddasFile</div>
-                <LinearProgress style={{marginLeft:'10px',marginBottom:"10px"}}variant="determinate" value={50}></LinearProgress>
+                <div style={{display:"flex"}}>
+                  <LinearProgress style={{width:"100%",marginTop:"3px",marginRight:"10px",marginLeft:'10px'}}variant="determinate" value={50}></LinearProgress>
+                  <div style={{color:"#007d85",bottom:"5px",position:"relative",display:"inline-block"}}>50%</div>
+                </div>
               </div> */}
             </Paper>
           {(()=>{

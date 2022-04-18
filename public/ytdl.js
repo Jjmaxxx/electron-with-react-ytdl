@@ -6,6 +6,10 @@ const { contextIsolated } = require("process");
 
 let vidInfo;
 let downloadedChunks=0;
+let videoDownloaded = {
+  audio:{downloaded:0, total:0},
+  video:{downloaded:0, total:0},
+}
 module.exports = {
   createReadableStream: (link)=>{
     return new Promise(resolve=>{
@@ -36,7 +40,7 @@ module.exports = {
         downloadedChunks++;
         if(downloadedChunks%30==0){
           console.log(args.vid.name + ": " +(totalDownloaded/total)*100 + "%");
-          args.win.webContents.send('loadingBar',{name: args.vid.name + ": ", progress: (totalDownloaded/total)*100});
+          args.win.webContents.send('loadingBar',{name: args.vid.name + ": ", progress: Math.floor((totalDownloaded/total)*100)});
         }
       }).pipe(fs.createWriteStream(path)).on('finish',()=>{
         downloadedChunks = 0;
@@ -45,10 +49,14 @@ module.exports = {
       })
     })
   },
-  mergeVideoAudio: (vid)=>{
-    const audio = ytdl(vid.url,{quality:"highestaudio"});
-    const video = ytdl(vid.url, { quality: vid.quality});
-    let path = "./public/videos/downloads/"+vid.name +".mp4";
+  mergeVideoAudio: (args)=>{
+    const audio = ytdl(args.vid.url,{quality:"highestaudio"}).on('progress',(_,totalDownloaded,total)=>{
+      videoDownloaded.audio = {downloaded: totalDownloaded, total: total}
+    });
+    const video = ytdl(args.vid.url, { quality: args.vid.quality}).on('progress',(_,totalDownloaded,total)=>{
+      videoDownloaded.video = {downloaded: totalDownloaded, total: total}
+    });;
+    let path = "./public/videos/downloads/"+ args.vid.name +".mp4";
     return new Promise(resolve=>{
       const ffmpegProcess = cp.spawn(ffmpeg, [
         // Remove ffmpeg's console spamming
@@ -74,9 +82,16 @@ module.exports = {
           'pipe', 'pipe', 'pipe',
         ],
       });
-      
-      //done downloading this runs
+      //https://github.com/fent/node-ytdl-core/blob/HEAD/example/ffmpeg.js
+      ffmpegProcess.stdio[3].on('data', chunk => {
+        let totalDownloaded = Math.floor((((videoDownloaded.audio.downloaded/videoDownloaded.audio.total)*100)+(videoDownloaded.video.downloaded/videoDownloaded.video.total)*100)/2);
+        // console.log("totalDownloaded: " + totalDownloaded + "%");
+        args.win.webContents.send('loadingBar',{name: args.vid.name + ": ", progress: totalDownloaded});
+        // console.log("audio: " + (videoDownloaded.audio.downloaded/videoDownloaded.audio.total)*100 + "%");
+        // console.log('video: ' + (videoDownloaded.video.downloaded/videoDownloaded.video.total)*100 + "%");
+      })
       ffmpegProcess.on('close', () => {
+        // process.stdout.write('finished')
         resolve(path);
       })
       audio.pipe(ffmpegProcess.stdio[4]);
