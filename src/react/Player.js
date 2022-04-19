@@ -13,7 +13,6 @@ import MovieIcon from '@mui/icons-material/Movie';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import CloseIcon from '@mui/icons-material/Close';
 import LoopIcon from '@mui/icons-material/Loop';
-import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import playerTheme from './utils/playerTheme.js';
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
@@ -21,6 +20,7 @@ import helperFunctions from './utils/helperFunctions.js';
 import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PictureInPictureAltIcon from '@mui/icons-material/PictureInPictureAlt';
+import MusicNoteRoundedIcon from '@mui/icons-material/MusicNoteRounded';
 import Slide from '@mui/material/Slide';
 let video,fileType,vidTitle,pipWidth,pipHeight, originalPlaylist;
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -266,8 +266,8 @@ class Player extends React.Component{
                     <CssBaseline/>
                     <div style= {classes.video} onMouseEnter={this.hoverOverPlayer} onMouseLeave={this.hoverOutPlayer}>
                         <ReactPlayer 
-                            config={{file:{attributes:{autopictureinpicture:true}}}}
-                            onContextMenu={e=>e.preventDefault()}
+                            // config={{file:{attributes:{autopictureinpicture:true}}}}
+                            // onContextMenu={e=>e.preventDefault()}
                             ref={this.ref}
                             url = {video}
                             key= {video}
@@ -392,15 +392,26 @@ class Player extends React.Component{
                                                         <ListItemIcon style={{marginTop:"3px"}}>
                                                         {
                                                             selected === this.state.playlist[index][0] ? 
-                                                            <PlayArrowIcon color="primary"/>
+                                                                <PlayArrowIcon style={{fontSize:"25px", color:"#4dadb5"}}/>
                                                             :
-                                                            <PlayCircleFilledIcon color="primary" />
-                                                        }
+                                                                data[0].slice(data[0].length-3) === "mp3" ?
+                                                                    <MusicNoteRoundedIcon/>
+                                                                :
+                                                                    <MovieIcon style={{fontSize:"25px"}}/>
+                                                        }     
                                                         </ListItemIcon>
-                                                        <ListItemText 
-                                                            style={{width:"100%", textOverflow: "ellipsis",whiteSpace:"nowrap",overflow:"hidden"}}
-                                                            primary={data[0].substring(0,data[0].length-4)}
-                                                        />
+                                                        {
+                                                            selected === this.state.playlist[index][0] ? 
+                                                                <ListItemText 
+                                                                    style={{color:"#4dadb5", display:"flex",width:"70%", textOverflow: "ellipsis",whiteSpace:"nowrap",overflow:"hidden"}}
+                                                                    primary={data[0].substring(0,data[0].length-4)}
+                                                                />
+                                                            :
+                                                            <ListItemText 
+                                                                style={{display:"flex",width:"70%", textOverflow: "ellipsis",whiteSpace:"nowrap",overflow:"hidden"}}
+                                                                primary={data[0].substring(0,data[0].length-4)}
+                                                            />
+                                                        }     
                                                         <p style={{color:"#007d85", marginBottom:"auto",marginTop:"auto"}}>{helperFunctions.getFancyTime(this.state.playlist[index][1])}</p>
                                                     </div>
                                             

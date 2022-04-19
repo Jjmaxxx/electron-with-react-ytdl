@@ -107,6 +107,7 @@ class YoutubeDownload extends React.Component{
                                         <div/>
                                 }     
                                 <div style={classes.contentCenter}>
+                                    {/* change these to selects instead */}
                                     <TextField
                                     label="FileType"
                                     //style={{width: `${(8*this.state.fileType.length) + 100}px`, top:"20px"}}
@@ -121,6 +122,7 @@ class YoutubeDownload extends React.Component{
                                     size="small"
                                     // helperText="Select Type"
                                     variant="outlined"
+                                    sx={{backgroundColor:"black"}}
                                     >
                                     {helperFunctions.setOptions([{name:"mp3",value:"mp3"},{name:"mp4",value:"mp4"}])}
                                     </TextField>
@@ -133,7 +135,7 @@ class YoutubeDownload extends React.Component{
                                             color="secondary"
                                             onChange= {(e)=>{this.changeOption(e,"quality")}}
                                             SelectProps={{
-                                            native: true,
+                                                native: true,
                                             }}
                                             size="small"
                                             // helperText="Select Type"

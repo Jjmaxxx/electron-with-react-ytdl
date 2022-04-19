@@ -66,14 +66,14 @@ const playerTheme = createTheme({
       styleOverrides: {
         root: {
           color:"#007d85",
-          '&$selected': {
-            backgroundColor: "#4dadb5",
+          "&:hover": {
+            color: "#4dadb5",
             "& .MuiSvgIcon-root ": {
-              color: "#007d85"
+              color: "#4dadb5"
             }
           },
-        }
-      }
+        },
+      } 
     },
     MuiOutlinedInput: {
       styleOverrides: {

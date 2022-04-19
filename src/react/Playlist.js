@@ -3,12 +3,13 @@ import styles from './utils/styles.js';
 import helperFunctions from './utils/helperFunctions.js';
 import { Alert, Button, Divider, Dialog, DialogTitle, DialogContent , DialogContentText, DialogActions, CircularProgress, TextField, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem} from "@mui/material";
 import FolderIcon from '@mui/icons-material/Folder';
-import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
+import MovieIcon from '@mui/icons-material/Movie';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import MusicNoteRoundedIcon from '@mui/icons-material/MusicNoteRounded';
 const { ipcRenderer } = window.require("electron");
-let fileToBeMoved;
+let fileToBeMoved = [];
 class Playlist extends React.Component{
     constructor(props){
         super(props);
@@ -134,8 +135,7 @@ class Playlist extends React.Component{
     renameFile = (event)=>{
         let newName = this.state.renameName;
         // console.log(newName);
-        if(!helperFunctions.detectRestrictedTitles(newName)){
-            console.log('Something is wrong with title');
+        if(!helperFunctions.detectRestrictedTitles(newName) || newName === fileToBeMoved[0]){
             this.setState({titleError:true});
         }else{
             ipcRenderer.send("renameFile",{file:fileToBeMoved, fileFolder: this.props.path,newName:helperFunctions.changeRestrictedTitles(newName)});
@@ -265,32 +265,50 @@ class Playlist extends React.Component{
                     backgroundColor:"#007d85",
                 }}}>
                 {this.state.playlist.map((data,index) => (
-                <div style ={classes.playlistListContainer}>
-                    <ListItemButton 
-                        style={{width:"100%",paddingRight:0}} 
-                        onClick={(event)=>{this.handleFileClick(event, data[0], index)}} 
-                        color="primary"  
-                        selected = {false}
-                        key={index}
-                    >
-                        <div style= {{marginLeft:"200px",display:"flex",width:"70%",position:"absolute"}}>
-                            <ListItemIcon style={{marginTop:"3px"}}>
+                    <div style ={classes.playlistListContainer}>
+                        <ListItemButton 
+                            style={{width:"100%",paddingRight:0}} 
+                            onClick={(event)=>{this.handleFileClick(event, data[0], index)}} 
+                            color="primary"  
+                            selected = {false}
+                            key={index}
+                        >
+                            <div style= {{marginLeft:"185px",display:"flex",width:"70%",position:"absolute"}}>
+                                <ListItemIcon style={{marginTop:"3px",position:"relative",left:"15px"}}>
+                                    {/* add if its a video playing or not */}
+                                    {/* {
+                                        selectedFile === data[0] ? 
+                                            <PlayArrowIcon color="primary"/>
+                                        :
+                                        data[0].slice(data[0].length-3) === "mp3" ?
+                                                <PlayCircleFilledIcon color="primary" />
+                                            :
+                                                <PlayCircleFilledIcon style={{backgroundColor:"#007d85", color:"#121921"}}/>
+                                    } */}
+                                    {
+                                        selectedFile === data[0] ? 
+                                            <PlayArrowIcon style={{fontSize:"25px",color:"#4dadb5"}}/>
+                                        :
+                                            data[0].slice(data[0].length-3) === "mp3" ?
+                                                <MusicNoteRoundedIcon/>
+                                            :
+                                                <MovieIcon style={{fontSize:"25px"}}/>
+                                    }         
+                                </ListItemIcon>
                                 {
-                                    selectedFile === data[0] ? 
-                                    <PlayArrowIcon color="primary"/>
+                                    selectedFile === data[0] ?
+                                        <ListItemText 
+                                            style={{color:"#4dadb5", width:"100%", textOverflow: "ellipsis",whiteSpace:"nowrap",overflow:"hidden"}}
+                                            primary={data[0].substring(0,data[0].length-4)}
+                                        />
                                     :
-                                    <PlayCircleFilledIcon color="primary" />
+                                        <ListItemText 
+                                            style={{width:"100%", textOverflow: "ellipsis",whiteSpace:"nowrap",overflow:"hidden"}}
+                                            primary={data[0].substring(0,data[0].length-4)}
+                                        />
                                 }
-                                
-                            </ListItemIcon>
-                            <ListItemText 
-                                style={{width:"100%", textOverflow: "ellipsis",whiteSpace:"nowrap",overflow:"hidden"}}
-                                primary={data[0].substring(0,data[0].length-4)}
-                            />
-                             
-                        </div>
-                   
-                    </ListItemButton>
+                            </div>
+                        </ListItemButton>
                     <div style={{display:"flex",alignItems:"flex-end", marginBottom:"8px"}}>
                         <p style={{color:"#007d85", marginBottom:"auto",marginTop:"auto"}}>{helperFunctions.getFancyTime(Math.trunc(data[1]))}</p>
                         <IconButton onClick={(event)=>{this.moreFileOptionsButton(event,index)}}>
@@ -341,7 +359,21 @@ class Playlist extends React.Component{
                 >
                     <div style={{display:"flex", flexDirection:"column", margin:"10px", marginBottom:"0"}}>
                         <DialogTitle color ="secondary">Rename File to What?</DialogTitle>
-                        <TextField onChange = {this.renameName} color="primary" id="filled-basic" label="Input Name Here" variant="filled" autoFocus/>
+                        <TextField 
+                            defaultValue = {
+                                fileToBeMoved[0] ?
+                                    fileToBeMoved[0].slice(0,fileToBeMoved[0].length-4)
+                                :
+                                    "null"
+                            } 
+                            inputProps={{ spellCheck: 'false' }}
+                            onChange = {this.renameName} 
+                            color="primary" 
+                            id="filled-basic" 
+                            label="Input Name Here" 
+                            variant="filled" 
+                            autoFocus
+                        />
                         {
                             this.state.titleError === true ?
                                 <div style= {{display:"flex",justifyContent:"center", alignItems:"center",flexDirection:"column"}}>

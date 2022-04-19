@@ -36,6 +36,9 @@ const theme = createTheme({
     },
     MuiInput: {
       styleOverrides: {
+        // props:{
+        //   inputProps: { spellCheck: 'false' }
+        // },
         underline: {
           "&:before": {
             borderBottomColor:"#62676f"
@@ -78,10 +81,13 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color:"#007d85",
-          '&$selected': {
-            backgroundColor: "#4dadb5",
+          "& .MuiSvgIcon-root ": {
+            color: "#007d85"
+          },
+          "&:hover": {
+            color: "#4dadb5",
             "& .MuiSvgIcon-root ": {
-              color: "#007d85"
+              color: "#4dadb5"
             }
           },
         }

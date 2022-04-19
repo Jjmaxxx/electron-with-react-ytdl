@@ -6,10 +6,6 @@ const { contextIsolated } = require("process");
 
 let vidInfo;
 let downloadedChunks=0;
-let videoDownloaded = {
-  audio:{downloaded:0, total:0},
-  video:{downloaded:0, total:0},
-}
 module.exports = {
   createReadableStream: (link)=>{
     return new Promise(resolve=>{
@@ -39,7 +35,7 @@ module.exports = {
       ytdl(args.vid.url,{filter:"audioonly"}).on('progress',(_,totalDownloaded,total)=>{
         downloadedChunks++;
         if(downloadedChunks%30==0){
-          console.log(args.vid.name + ": " +(totalDownloaded/total)*100 + "%");
+          // console.log(args.vid.name + ": " +(totalDownloaded/total)*100 + "%");
           args.win.webContents.send('loadingBar',{name: args.vid.name + ": ", progress: Math.floor((totalDownloaded/total)*100)});
         }
       }).pipe(fs.createWriteStream(path)).on('finish',()=>{
@@ -50,6 +46,10 @@ module.exports = {
     })
   },
   mergeVideoAudio: (args)=>{
+    let videoDownloaded = {
+      audio:{downloaded:0, total:0},
+      video:{downloaded:0, total:0},
+    }
     const audio = ytdl(args.vid.url,{quality:"highestaudio"}).on('progress',(_,totalDownloaded,total)=>{
       videoDownloaded.audio = {downloaded: totalDownloaded, total: total}
     });
@@ -86,12 +86,14 @@ module.exports = {
       ffmpegProcess.stdio[3].on('data', chunk => {
         let totalDownloaded = Math.floor((((videoDownloaded.audio.downloaded/videoDownloaded.audio.total)*100)+(videoDownloaded.video.downloaded/videoDownloaded.video.total)*100)/2);
         // console.log("totalDownloaded: " + totalDownloaded + "%");
+        console.log(args.vid.name)
         args.win.webContents.send('loadingBar',{name: args.vid.name + ": ", progress: totalDownloaded});
         // console.log("audio: " + (videoDownloaded.audio.downloaded/videoDownloaded.audio.total)*100 + "%");
         // console.log('video: ' + (videoDownloaded.video.downloaded/videoDownloaded.video.total)*100 + "%");
       })
       ffmpegProcess.on('close', () => {
         // process.stdout.write('finished')
+        args.win.webContents.send('loadingBar',{name: args.vid.name + ": ", progress: 100});
         resolve(path);
       })
       audio.pipe(ffmpegProcess.stdio[4]);
