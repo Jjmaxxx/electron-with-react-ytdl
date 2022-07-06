@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "main": "public/electron.js",
+  "productName": "Youtube Downloader and Player",
+  "description": "example",
+  "author": "joe",
+  "homepage": "./",
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
@@ -18,14 +22,16 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "child_process": "^1.0.2",
+    "electron-is-dev": "^2.0.0",
     "ffmpeg-static": "^4.4.0",
     "fs": "^0.0.1-security",
+    "fs-extra": "^10.1.0",
     "get-audio-duration": "^3.0.0",
     "nodemon": "^2.0.12",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-player": "^2.9.0",
-    "react-scripts": "^5.0.0",
+    "react-scripts": "^5.0.1",
     "web-vitals": "^1.0.1",
     "ytdl-core": "^4.11.0"
   },
@@ -35,7 +41,25 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "concurrently -k \"npm start\" \"npm:electron\"",
-    "electron": "wait-on tcp:3000 && electron ."
+    "electron": "wait-on tcp:3000 && electron .",
+    "build-electron": "mkdir build/src && robocopy electron build/electron /S & robocopy src build/src /S",
+    "package": "electron-builder build --win -c.extraMetadata.main=build/electron.js --publish never"
+  },
+  "build": {
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "extends": null,
+    "asarUnpack":[
+      "build",
+      "node_modules/child_process"
+    ],
+    "publish": {
+      "provider": "github",
+      "repo": "youtube downloader and player",
+      "owner": "jjmaxxx"
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -58,6 +82,7 @@
   "devDependencies": {
     "concurrently": "^6.2.1",
     "electron": "^13.2.1",
+    "electron-builder": "^23.1.0",
     "electron-is-dev": "^2.0.0",
     "wait-on": "^6.0.0"
   }
